@@ -47,7 +47,37 @@ document.addEventListener('DOMContentLoaded', () => {
     initOurWorkDropdown();
     initContactButton();
     initChat();
+    initDimCarousel();
 });
+
+function initDimCarousel() {
+    const track = document.getElementById('dim-carousel-track');
+    if (!track) return;
+    const slides = track.querySelectorAll('.dim-slide-card');
+    if (slides.length === 0) return;
+
+    let currentIndex = 0;
+    const INTERVAL_MS = 5000;
+
+    function goToSlide(index) {
+        slides.forEach((s, i) => s.classList.toggle('active', i === index));
+        currentIndex = index;
+    }
+
+    function nextSlide() {
+        goToSlide((currentIndex + 1) % slides.length);
+    }
+
+    let intervalId = setInterval(nextSlide, INTERVAL_MS);
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            clearInterval(intervalId);
+        } else {
+            intervalId = setInterval(nextSlide, INTERVAL_MS);
+        }
+    });
+}
 
 function initContactButton() {
     const btn = document.getElementById('nav-contact-btn');
