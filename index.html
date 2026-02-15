@@ -31,6 +31,26 @@
                 <a href="index.html" class="nav-link active" data-i18n="homePage">الصفحة الرئيسية</a>
             </div>
             <div class="nav-right">
+                <button class="nav-contact-btn" id="nav-contact-btn" title="معلومات التواصل">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span data-i18n="contactUs">تواصل معنا</span>
+                </button>
+                <div class="contact-panel hidden" id="nav-contact-panel">
+                    <div class="contact-panel-inner">
+                        <a href="tel:+22247774141" class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <span>0022247774141</span>
+                        </a>
+                        <a href="https://wa.me/22247774141" target="_blank" class="contact-item">
+                            <span class="contact-icon">💬</span>
+                            <span>واتساب 0022247774141</span>
+                        </a>
+                        <a href="mailto:info@itnord.com" class="contact-item">
+                            <span class="contact-icon">✉️</span>
+                            <span>info@itnord.com</span>
+                        </a>
+                    </div>
+                </div>
                 <button class="lang-switcher" id="lang-switcher" title="تغيير اللغة">
                     <span class="lang-label" data-ar="EN" data-en="العربية">EN</span>
                 </button>
@@ -44,40 +64,8 @@
         </nav>
     </header>
 
-    <!-- Digital Imagination - Auto Animated Platform -->
-    <section class="digital-imagination" id="digital-imagination">
-        <div class="dim-bg">
-            <div class="dim-orbit orbit-1"></div>
-            <div class="dim-orbit orbit-2"></div>
-            <div class="dim-orbit orbit-3"></div>
-            <div class="dim-grid"></div>
-            <div class="dim-particles">
-                <span></span><span></span><span></span><span></span><span></span>
-                <span></span><span></span><span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="dim-content">
-            <h2 class="dim-title" data-i18n="digitalImagination">الخيال الرقمي</h2>
-            <p class="dim-subtitle">Where technology meets creativity</p>
-            <div class="dim-carousel">
-                <div class="dim-slide active">
-                    <div class="dim-circuit-svg"></div>
-                    <span>تقنية</span>
-                </div>
-                <div class="dim-slide">
-                    <div class="dim-circuit-svg"></div>
-                    <span>ابتكار</span>
-                </div>
-                <div class="dim-slide">
-                    <div class="dim-circuit-svg"></div>
-                    <span>اتصال</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="hero-section">
         <div class="hero-content">
             <div class="logo-hero">
                 <div class="circuit-board">
@@ -117,6 +105,9 @@
 
     <!-- Services Content -->
     <section class="services-content" id="network-section">
+        <div class="network-contact-box">
+            <p><strong>للتواصل:</strong> هاتف و واتساب <a href="tel:+22247774141">0022247774141</a></p>
+        </div>
         <div class="service-block">
             <div class="service-image-wrap">
                 <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800" alt="توزيع الشبكة" id="network-img">
@@ -148,6 +139,40 @@
             </div>
             <div class="service-text">
                 <p>حلول التيار الخفيف والاتصالات للمباني الذكية: نوفر أساساً تكنولوجياً متيناً لمنشآتك.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Digital Imagination - منصة عرض واحدة مع صور وملخصات -->
+    <section class="digital-imagination" id="digital-imagination">
+        <div class="dim-bg">
+            <div class="dim-orbit orbit-1"></div>
+            <div class="dim-orbit orbit-2"></div>
+            <div class="dim-grid"></div>
+        </div>
+        <h2 class="dim-title" data-i18n="digitalImagination">الخيال الرقمي</h2>
+        <p class="dim-subtitle">Where technology meets creativity</p>
+        <div class="dim-showcase">
+            <div class="dim-card">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600" alt="شبكات">
+                <div class="dim-card-overlay">
+                    <h3>شبكات البيانات</h3>
+                    <p>بنية تحتية قوية للبيانات والاتصالات تعتمد عليها المباني الحديثة</p>
+                </div>
+            </div>
+            <div class="dim-card">
+                <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600" alt="هوائيات">
+                <div class="dim-card-overlay">
+                    <h3>هوائيات محسنة</h3>
+                    <p>تجربة إنترنت استثنائية عبر تقنية متقدمة واتصال مضمون</p>
+                </div>
+            </div>
+            <div class="dim-card">
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" alt="تقنية">
+                <div class="dim-card-overlay">
+                    <h3>ابتكار تقني</h3>
+                    <p>سنوات من الخبرة في مد جسور الاتصال</p>
+                </div>
             </div>
         </div>
     </section>
@@ -216,11 +241,6 @@
             <!-- Populated by admin -->
         </div>
     </section>
-
-    <!-- Communication Buttons - Dynamic from Admin -->
-    <div class="communication-panel" id="communication-panel">
-        <!-- Populated by main.js from admin config -->
-    </div>
 
     <!-- Live Chat Widget -->
     <div class="chat-widget" id="chat-widget">

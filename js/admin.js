@@ -1,10 +1,10 @@
 /**
  * IT NORD - Admin Panel
- * Login: 47774141 / admin1234
+ * Login: 0022247774141 / admin1234
  */
 
 const CREDENTIALS = {
-    phone: '47774141',
+    phone: '0022247774141',
     password: 'admin1234'
 };
 
@@ -33,7 +33,9 @@ function initLogin() {
         const phone = document.getElementById('login-phone').value.trim();
         const password = document.getElementById('login-password').value;
 
-        if (phone === CREDENTIALS.phone && password === CREDENTIALS.password) {
+        const phoneNorm = phone.replace(/\D/g, '');
+        const credNorm = CREDENTIALS.phone.replace(/\D/g, '');
+        if ((phone === CREDENTIALS.phone || phoneNorm === credNorm || phone === '22247774141') && password === CREDENTIALS.password) {
             sessionStorage.setItem('itnord_admin', 'authenticated');
             errorEl.textContent = '';
             showDashboard();
@@ -324,8 +326,8 @@ function loadButtonsEditor() {
     const config = JSON.parse(localStorage.getItem('itnord_comm_buttons') || 'null');
     const defaultConfig = {
         buttons: [
-            { type: 'phone', href: 'tel:+96147774141', label: 'اتصل', title: 'اتصل بنا' },
-            { type: 'whatsapp', href: 'https://wa.me/96147774141', label: 'واتساب', title: 'واتساب', target: '_blank' },
+            { type: 'phone', href: 'tel:+22247774141', label: 'اتصل', title: '0022247774141' },
+            { type: 'whatsapp', href: 'https://wa.me/22247774141', label: 'واتساب', title: '0022247774141', target: '_blank' },
             { type: 'email', href: 'mailto:info@itnord.com', label: 'بريد', title: 'البريد الإلكتروني' },
             { type: 'location', href: '#', label: 'الموقع', title: 'الموقع' }
         ],

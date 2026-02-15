@@ -18,7 +18,8 @@ const TRANSLATIONS = {
         chatWelcome: 'مرحباً! كيف يمكننا مساعدتك؟',
         chatPlaceholder: 'اكتب رسالتك...',
         sectionTitleTools: 'أدواتنا وتقنياتنا',
-        digitalImagination: 'الخيال الرقمي'
+        digitalImagination: 'الخيال الرقمي',
+        contactUs: 'تواصل معنا'
     },
     en: {
         ourWork: 'Our Work',
@@ -33,30 +34,30 @@ const TRANSLATIONS = {
         chatWelcome: 'Hello! How can we help you?',
         chatPlaceholder: 'Type your message...',
         sectionTitleTools: 'Our Tools & Technologies',
-        digitalImagination: 'Digital Imagination'
+        digitalImagination: 'Digital Imagination',
+        contactUs: 'Contact Us'
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
-    initDigitalImaginationCarousel();
     loadFeatures();
     loadTools();
     loadMediaOverrides();
-    loadCommunicationButtons();
     initOurWorkDropdown();
+    initContactButton();
     initChat();
 });
 
-function initDigitalImaginationCarousel() {
-    const slides = document.querySelectorAll('.dim-slide');
-    if (slides.length < 2) return;
-    let idx = 0;
-    setInterval(() => {
-        slides.forEach(s => s.classList.remove('active'));
-        idx = (idx + 1) % slides.length;
-        slides[idx].classList.add('active');
-    }, 3000);
+function initContactButton() {
+    const btn = document.getElementById('nav-contact-btn');
+    const panel = document.getElementById('nav-contact-panel');
+    if (!btn || !panel) return;
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => panel.classList.add('hidden'));
 }
 
 function getCurrentLang() {
@@ -177,8 +178,8 @@ function loadMediaOverrides() {
 
 function getDefaultCommunicationButtons() {
     return [
-        { type: 'phone', href: 'tel:+96147774141', label: 'اتصل', title: 'اتصل بنا' },
-        { type: 'whatsapp', href: 'https://wa.me/96147774141', label: 'واتساب', title: 'واتساب', target: '_blank' },
+        { type: 'phone', href: 'tel:+22247774141', label: 'اتصل', title: '0022247774141' },
+        { type: 'whatsapp', href: 'https://wa.me/22247774141', label: 'واتساب', title: '0022247774141', target: '_blank' },
         { type: 'email', href: 'mailto:info@itnord.com', label: 'بريد', title: 'البريد الإلكتروني' },
         { type: 'location', href: '#', label: 'الموقع', title: 'الموقع' }
     ];

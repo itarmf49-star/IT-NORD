@@ -137,6 +137,72 @@ body {
     border-radius: 0 0 12px 12px;
 }
 
+.nav-contact-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: var(--gold);
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.nav-contact-btn:hover {
+    background: var(--gold);
+    color: var(--bg-dark);
+}
+
+.nav-contact-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.contact-panel {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: var(--bg-dark-soft);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    min-width: 260px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    z-index: 100;
+}
+
+.contact-panel.hidden {
+    display: none !important;
+}
+
+.contact-panel-inner {
+    padding: 1rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    color: var(--gray-300);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.contact-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold);
+}
+
+.contact-icon {
+    font-size: 1.2rem;
+}
+
 .lang-switcher {
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(212, 175, 55, 0.3);
@@ -170,6 +236,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    position: relative;
 }
 
 .brand-name {
@@ -199,13 +266,13 @@ body {
     letter-spacing: -0.02em;
 }
 
-/* Digital Imagination - Auto Animated Platform */
+/* Digital Imagination - منصة عرض واحدة */
 .digital-imagination {
     position: relative;
-    min-height: 45vh;
+    padding: 3rem 2rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     background: linear-gradient(135deg, #0a0c0f 0%, #12151a 30%, #0d0f14 100%);
     overflow: hidden;
 }
@@ -307,6 +374,8 @@ body {
 }
 
 .dim-title {
+    position: relative;
+    z-index: 2;
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     color: var(--gold);
     font-weight: 800;
@@ -315,9 +384,73 @@ body {
 }
 
 .dim-subtitle {
+    position: relative;
+    z-index: 2;
     color: var(--gray-300);
     font-size: 0.95rem;
     margin-bottom: 2rem;
+}
+
+.dim-showcase {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.dim-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    aspect-ratio: 4/3;
+}
+
+.dim-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.dim-card:hover img {
+    transform: scale(1.08);
+}
+
+.dim-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    transition: background 0.4s ease;
+}
+
+.dim-card:hover .dim-card-overlay {
+    background: linear-gradient(to top, rgba(13,15,18,0.95) 0%, rgba(212,175,55,0.2) 100%);
+}
+
+.dim-card-overlay h3 {
+    color: var(--gold);
+    font-size: 1.25rem;
+    margin-bottom: 0.4rem;
+}
+
+.dim-card-overlay p {
+    color: var(--gray-300);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+    .dim-showcase {
+        grid-template-columns: 1fr;
+    }
 }
 
 .dim-carousel {
@@ -590,6 +723,26 @@ body {
 /* Services */
 .services-content {
     padding: 4rem 2rem;
+}
+
+.network-contact-box {
+    max-width: 1200px;
+    margin: 0 auto 2rem;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-dark-soft));
+    border-radius: 12px;
+    text-align: center;
+    color: var(--white);
+}
+
+.network-contact-box a {
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.network-contact-box a:hover {
+    text-decoration: underline;
 }
 
 .service-block {
