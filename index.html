@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT NORD | For Technical Solutions</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <button class="nav-icon search-btn" aria-label="Search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                </button>
+                <div class="nav-dropdown" id="our-work-dropdown">
+                    <span data-i18n="ourWork">اعمالنا</span>
+                    <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    <div class="dropdown-menu" id="our-work-menu">
+                        <a href="#features-section" class="dropdown-item" data-i18n="featuredServices">خدماتنا المميزة</a>
+                        <a href="#dish-section" class="dropdown-item" data-i18n="antennas">الهوائيات والاتصال</a>
+                        <a href="#network-section" class="dropdown-item" data-i18n="networkServices">خدمات الشبكات</a>
+                        <a href="#business-summary" class="dropdown-item" data-i18n="businessSummary">ملخص الأعمال</a>
+                        <a href="#tools-section" class="dropdown-item" data-i18n="ourTools">أدواتنا وتقنياتنا</a>
+                        <a href="#integrated-section" class="dropdown-item" data-i18n="integratedSolutions">الحلول المتكاملة</a>
+                        <a href="#digital-imagination" class="dropdown-item" data-i18n="digitalImagination">الخيال الرقمي</a>
+                    </div>
+                </div>
+                <a href="index.html" class="nav-link active" data-i18n="homePage">الصفحة الرئيسية</a>
+            </div>
+            <div class="nav-right">
+                <button class="lang-switcher" id="lang-switcher" title="تغيير اللغة">
+                    <span class="lang-label" data-ar="EN" data-en="العربية">EN</span>
+                </button>
+                <span class="brand-name">IT NORD</span>
+                <div class="logo-small">
+                    <div class="logo-circuit">
+                        <span>IT</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Digital Imagination - Auto Animated Platform -->
+    <section class="digital-imagination" id="digital-imagination">
+        <div class="dim-bg">
+            <div class="dim-orbit orbit-1"></div>
+            <div class="dim-orbit orbit-2"></div>
+            <div class="dim-orbit orbit-3"></div>
+            <div class="dim-grid"></div>
+            <div class="dim-particles">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="dim-content">
+            <h2 class="dim-title" data-i18n="digitalImagination">الخيال الرقمي</h2>
+            <p class="dim-subtitle">Where technology meets creativity</p>
+            <div class="dim-carousel">
+                <div class="dim-slide active">
+                    <div class="dim-circuit-svg"></div>
+                    <span>تقنية</span>
+                </div>
+                <div class="dim-slide">
+                    <div class="dim-circuit-svg"></div>
+                    <span>ابتكار</span>
+                </div>
+                <div class="dim-slide">
+                    <div class="dim-circuit-svg"></div>
+                    <span>اتصال</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo-hero">
+                <div class="circuit-board">
+                    <span class="circuit-it">IT</span>
+                </div>
+                <div class="hero-brand">
+                    <h1>IT NORD</h1>
+                    <p class="tagline">FOR TECHNICAL SOLUTIONS</p>
+                </div>
+            </div>
+            <p class="hero-slogan en">In the artistic world we make the impossible ?</p>
+            <p class="hero-slogan ar">في العالم الفني نصنع المستحيل ؟</p>
+        </div>
+    </section>
+
+    <!-- Featured Sections (Dynamic from Admin) -->
+    <section class="features" id="features-section">
+        <div class="features-grid" id="features-grid">
+            <!-- Populated by JS from admin data -->
+        </div>
+    </section>
+
+    <!-- Dish / Antenna Section -->
+    <section class="dish-section">
+        <div class="dish-content">
+            <div class="dish-image-container">
+                <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800" alt="هوائيات محسنة" class="dish-image" id="dish-hero-img">
+                <div class="dish-overlay"></div>
+            </div>
+            <div class="dish-text">
+                <h2>سنوات من الخبرة في مد جسور الاتصال</h2>
+                <p class="dish-subtitle">هوائيات محسنة لتجربة إنترنت استثنائية</p>
+                <p class="dish-desc">تقنية متقدمة، اتصال مضمون</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Content -->
+    <section class="services-content" id="network-section">
+        <div class="service-block">
+            <div class="service-image-wrap">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800" alt="توزيع الشبكة" id="network-img">
+            </div>
+            <div class="service-text">
+                <p>خدمات توزيع تضمن وصول <span class="highlight-btn">الإشارة بقوة</span>.</p>
+            </div>
+        </div>
+        <div class="service-block reverse">
+            <div class="service-image-wrap">
+                <img src="https://images.unsplash.com/photo-1606904825846-647eb07f5be2?w=800" alt="تغطية الواي فاي" id="wifi-img">
+            </div>
+            <div class="service-text">
+                <h3>حوّل منزلك إلى منطقة تغطية كاملة</h3>
+                <p>شبكة منزلية بلا حدود: توزيع إنترنت يغطي كل احتياجات عائلتك المتصلة.</p>
+            </div>
+        </div>
+        <div class="service-block">
+            <div class="service-image-wrap">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800" alt="غرف السيرفرات" id="server-img">
+            </div>
+            <div class="service-text">
+                <p>من شبكات البيانات إلى أنظمة الأمان والتيار الخفيف، نحن نبني الأساس الرقمي.</p>
+            </div>
+        </div>
+        <div class="service-block reverse">
+            <div class="service-image-wrap">
+                <img src="https://images.unsplash.com/photo-1558002038-10559092a4f2?w=800" alt="المباني الذكية" id="smart-img">
+            </div>
+            <div class="service-text">
+                <p>حلول التيار الخفيف والاتصالات للمباني الذكية: نوفر أساساً تكنولوجياً متيناً لمنشآتك.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Business Summary -->
+    <section class="business-summary" id="business-summary">
+        <div class="summary-header">
+            <div class="summary-icon">💡</div>
+            <h2>IT NORD BUSINESS SUMMARY</h2>
+        </div>
+        <p class="summary-intro">IT NORD is a technical partner specialized in providing cutting-edge engineering solutions for infrastructure and smart systems, with a focus on quality and precision in execution.</p>
+        <p class="summary-intro-ar">شريكاً تقنياً متخصصاً في تقديم الحلول الهندسية المتطورة للبنية التحتية والأنظمة الذكية، مع التركيز على الجودة والدقة في التنفيذ</p>
+
+        <div class="services-list">
+            <div class="service-category">
+                <h3>1. حلول الشبكات والاتصالات (Network & Connectivity)</h3>
+                <ul>
+                    <li>تصميم وتنفيذ شبكات الإنترنت: توفير بنية تحتية قوية للبيانات والاتصالات تعتمد عليها المباني الحديثة.</li>
+                    <li>حلول الواي فاي (Wi-Fi Solutions): تقنيات متقدمة تضمن تغطية لاسلكية شاملة وقوية لكل زوايا المنزل أو المبنى (توزيع إشارة ذكي).</li>
+                    <li>الجسور اللاسلكية والهوائيات: تركيب هوائيات احترافية لتحسين تجربة الإنترنت وربط المواقع عبر جسور اتصال لاسلكية بعيدة المدى.</li>
+                </ul>
+            </div>
+            <div class="service-category">
+                <h3>2. أنظمة التيار الخفيف والمباني الذكية (Low Current & Smart Home)</h3>
+                <ul>
+                    <li>أتمتة المباني: تحويل المباني العادية إلى مباني ذكية توفر أساساً تكنولوجياً متطوراً.</li>
+                    <li>أنظمة المراقبة والأمان: تركيب أحدث أنظمة كاميرات المراقبة لضمان حماية المنشآت والعائلات ومراقبتها عن بعد في أي وقت ومن أي مكان.</li>
+                    <li>تكامل الأنظمة: ربط الأجهزة المختلفة (هاتف، حاسوب، تلفاز) عبر وحدات وكابلات متطورة لضمان اتصال ذكي وآمن (Modules CPL).</li>
+                </ul>
+            </div>
+            <div class="service-category">
+                <h3>3. الخدمات الهندسية والاحترافية (Engineering Services)</h3>
+                <ul>
+                    <li>الأساس الرقمي: بناء وتجهيز غرف السيرفرات (Server Racks) وتنظيم الكابلات باحترافية عالية لضمان استقرار الخدمة.</li>
+                    <li>الاستشارات الفنية: تقديم حلول هندسية متكاملة تتناسب مع احتياجات المشاريع المتطورة والمباني الحديثة.</li>
+                    <li>الدقة والكفاءة: شعار الشركة "في العالم الفني نصنع المستحيل".</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Additional Content Blocks -->
+    <section class="extra-content" id="integrated-section">
+        <div class="content-block">
+            <div class="block-image">
+                <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800" alt="حلول متكاملة" id="integrated-img">
+            </div>
+            <div class="block-text">
+                <h3>حلول متكاملة لبيئة متصلة وذكية.</h3>
+            </div>
+        </div>
+        <div class="content-block">
+            <div class="block-image">
+                <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=800" alt="المراقبة والأمان" id="security-img">
+            </div>
+            <div class="block-text">
+                <h3>منزلك في أمان دائماً: راقب واطمئن أينما كنت.</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Tools Section (Admin-managed) -->
+    <section class="tools-section" id="tools-section">
+        <h2 class="section-title">أدواتنا وتقنياتنا</h2>
+        <div class="tools-grid" id="tools-grid">
+            <!-- Populated by admin -->
+        </div>
+    </section>
+
+    <!-- Communication Buttons - Dynamic from Admin -->
+    <div class="communication-panel" id="communication-panel">
+        <!-- Populated by main.js from admin config -->
+    </div>
+
+    <!-- Live Chat Widget -->
+    <div class="chat-widget" id="chat-widget">
+        <button class="chat-toggle" id="chat-toggle" aria-label="فتح الدردشة">
+            <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="chat-badge">1</span>
+        </button>
+        <div class="chat-panel hidden" id="chat-panel">
+            <div class="chat-header">
+                <h4 data-i18n="liveChat">الدردشة المباشرة</h4>
+                <button class="chat-close" id="chat-close">&times;</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-msg received">
+                    <p data-i18n="chatWelcome">مرحباً! كيف يمكننا مساعدتك؟</p>
+                </div>
+            </div>
+            <div class="chat-input-wrap">
+                <input type="text" class="chat-input" id="chat-input" placeholder="اكتب رسالتك..." data-i18n-placeholder="chatPlaceholder">
+                <button class="chat-send" id="chat-send">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Link -->
+    <a href="admin.html" class="admin-link" title="لوحة التحكم">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+    </a>
+
+    <footer class="footer">
+        <div class="footer-icons">
+            <span class="footer-icon">🌐</span>
+            <span class="footer-icon">💻</span>
+            <span class="footer-icon">🖥️</span>
+            <span class="footer-icon">📡</span>
+        </div>
+        <p>IT NORD — For Technical Solutions</p>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
