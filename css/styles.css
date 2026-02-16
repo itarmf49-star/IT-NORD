@@ -1010,7 +1010,7 @@ body {
 .communication-panel {
     position: fixed;
     left: 1.5rem;
-    bottom: 6rem;
+    bottom: 1.5rem;
     z-index: 900;
     display: flex;
     flex-direction: column;
@@ -1091,8 +1091,8 @@ body {
 /* Live Chat Widget */
 .chat-widget {
     position: fixed;
-    right: 5.5rem;
-    bottom: 6rem;
+    right: 1.5rem;
+    bottom: 1.5rem;
     z-index: 900;
 }
 
@@ -1275,6 +1275,37 @@ body {
     transform: scale(1.1);
 }
 
+/* Bottom Contact Bar - fixed at bottom */
+.bottom-contact-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-dark-soft));
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    z-index: 850;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.bottom-contact-item {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.bottom-contact-item:hover {
+    text-decoration: underline;
+}
+
+body {
+    padding-bottom: 3.5rem;
+}
+
 /* Footer */
 .footer {
     background: var(--bg-dark);
@@ -1354,3 +1385,26 @@ img[src*="assets/"] {
         flex-direction: column;
     }
 }
+
+/* Bottom Contact Bar */
+.bottom-contact-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, var(--bg-dark), var(--bg-dark-soft));
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    z-index: 850;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+.bottom-contact-item {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+.bottom-contact-item:hover { text-decoration: underline; }

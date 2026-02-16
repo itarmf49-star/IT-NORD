@@ -328,7 +328,7 @@ function loadButtonsEditor() {
         buttons: [
             { type: 'phone', href: 'tel:+22247774141', label: 'اتصل', title: '0022247774141' },
             { type: 'whatsapp', href: 'https://wa.me/22247774141', label: 'واتساب', title: '0022247774141', target: '_blank' },
-            { type: 'email', href: 'mailto:info@itnord.com', label: 'بريد', title: 'البريد الإلكتروني' },
+            { type: 'email', href: 'mailto:Itnord@outlook.fr', label: 'بريد', title: 'البريد الإلكتروني' },
             { type: 'location', href: '#', label: 'الموقع', title: 'الموقع' }
         ],
         position: 'left',
