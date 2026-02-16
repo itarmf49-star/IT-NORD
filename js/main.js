@@ -160,9 +160,9 @@ function loadFeatures() {
 
 function getDefaultFeatures() {
     return [
-        { url: 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=600', title: 'جودة التركيب وكفاءة الأداء' },
-        { url: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600', title: 'هوائيات محسنة لتجربة إنترنت استثنائية.' },
-        { url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=600', title: 'سنوات من الخبرة في مد جسور الاتصال' }
+        { url: 'assets/1-ptz-camera.png', title: 'كاميرات المراقبة والأمان' },
+        { url: 'assets/8-antenna.png', title: 'هوائيات محسنة لتجربة إنترنت استثنائية' },
+        { url: 'assets/5-iot-smart-home.png', title: 'المباني الذكية وإنترنت الأشياء' }
     ];
 }
 
