@@ -967,6 +967,73 @@ body {
 }
 
 /* Tools Section */
+/* Projects Section - links to single project pages */
+.projects-section {
+    padding: 4rem 2rem;
+    background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-dark-soft) 100%);
+    color: var(--white);
+}
+
+.projects-section .section-title {
+    color: var(--white);
+}
+
+.projects-section .section-subtitle {
+    text-align: center;
+    color: var(--gray-300);
+    margin-bottom: 2rem;
+}
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.project-card {
+    background: var(--bg-dark-soft);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    border-color: var(--gold);
+}
+
+.project-card-thumb {
+    aspect-ratio: 16/9;
+    overflow: hidden;
+}
+
+.project-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-card-body {
+    padding: 1.25rem;
+}
+
+.project-card-body h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.project-card-body p {
+    font-size: 0.9rem;
+    color: var(--gray-400);
+}
+
 .tools-section {
     padding: 4rem 2rem;
     background: linear-gradient(180deg, #f8f9fa 0%, #eef0f2 100%);

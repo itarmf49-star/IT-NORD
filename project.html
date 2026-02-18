@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT NORD | مشروع</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/project.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <a href="/" class="nav-link">← العودة للرئيسية</a>
+            </div>
+            <div class="nav-right">
+                <a href="tel:+22247774141" class="nav-contact-btn">📞 اتصل</a>
+                <span class="brand-name">IT NORD</span>
+                <div class="logo-small">
+                    <div class="logo-circuit"><span>IT</span></div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="project-main" id="project-main">
+        <div class="project-loading" id="project-loading">جاري التحميل...</div>
+        <article class="project-article hidden" id="project-article">
+            <div class="project-hero">
+                <div class="project-thumb" id="project-thumb"></div>
+                <div class="project-video-wrap hidden" id="project-video-wrap">
+                    <iframe id="project-video" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="project-content">
+                <h1 id="project-title">عنوان المشروع</h1>
+                <div class="project-description" id="project-description"></div>
+            </div>
+        </article>
+        <div class="project-notfound hidden" id="project-notfound">
+            <p>المشروع غير موجود</p>
+            <a href="/" class="btn-back">العودة للرئيسية</a>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>IT NORD — For Technical Solutions</p>
+    </footer>
+
+    <script>
+        (function() {
+            const path = window.location.pathname;
+            const match = path.match(/\/project\/(\d+)/);
+            const pid = match ? parseInt(match[1], 10) : parseInt(new URLSearchParams(location.search).get('id') || '0', 10);
+            const API = (location.protocol === 'http:' || location.protocol === 'https:') ? location.origin + '/api' : '';
+
+            const loading = document.getElementById('project-loading');
+            const article = document.getElementById('project-article');
+            const notfound = document.getElementById('project-notfound');
+            const titleEl = document.getElementById('project-title');
+            const descEl = document.getElementById('project-description');
+            const thumbEl = document.getElementById('project-thumb');
+            const videoWrap = document.getElementById('project-video-wrap');
+            const videoEl = document.getElementById('project-video');
+
+            async function load() {
+                if (!pid) {
+                    showNotFound();
+                    return;
+                }
+                try {
+                    const res = await fetch(API + '/projects/' + pid);
+                    if (!res.ok) {
+                        showNotFound();
+                        return;
+                    }
+                    const p = await res.json();
+                    const lang = localStorage.getItem('itnord_lang') || 'ar';
+                    titleEl.textContent = lang === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar);
+                    descEl.textContent = lang === 'ar' ? (p.description_ar || p.description_en) : (p.description_en || p.description_ar);
+                    if (p.video_url) {
+                        videoWrap.classList.remove('hidden');
+                        thumbEl.classList.add('hidden');
+                        let url = p.video_url;
+                        if (url.includes('youtube.com/watch')) {
+                            const v = new URL(url).searchParams.get('v');
+                            url = v ? 'https://www.youtube.com/embed/' + v : p.video_url;
+                        } else if (url.includes('youtu.be/')) {
+                            const v = url.split('youtu.be/')[1];
+                            url = v ? 'https://www.youtube.com/embed/' + v.split('?')[0] : p.video_url;
+                        }
+                        videoEl.src = url;
+                    } else if (p.thumbnail_url) {
+                        thumbEl.innerHTML = '<img src="' + p.thumbnail_url + '" alt="">';
+                        thumbEl.classList.remove('hidden');
+                    }
+                    document.title = 'IT NORD | ' + (p.title_ar || p.title_en || 'مشروع');
+                    loading.classList.add('hidden');
+                    article.classList.remove('hidden');
+                } catch (e) {
+                    showNotFound();
+                }
+            }
+
+            function showNotFound() {
+                loading.classList.add('hidden');
+                article.classList.add('hidden');
+                notfound.classList.remove('hidden');
+            }
+
+            load();
+        })();
+    </script>
+</body>
+</html>

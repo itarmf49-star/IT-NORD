@@ -496,6 +496,62 @@ body {
     font-size: 0.9rem;
 }
 
+/* Project Editor */
+.project-editor-item {
+    background: var(--bg-dark);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.project-editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.project-editor-header span {
+    font-weight: 600;
+}
+
+.project-view-link {
+    color: var(--gold);
+    text-decoration: none;
+}
+
+.project-view-link:hover {
+    text-decoration: underline;
+}
+
+.project-editor-item label {
+    display: block;
+    margin: 0.75rem 0 0.35rem;
+    color: var(--gray-400);
+    font-size: 0.9rem;
+}
+
+.project-editor-item input,
+.project-editor-item select,
+.project-editor-item textarea {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: var(--bg-panel);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    color: var(--white);
+}
+
+.project-editor-item textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.project-editor-actions {
+    margin-top: 1rem;
+}
+
 @media (max-width: 768px) {
     .comm-btn-editor-item {
         grid-template-columns: 1fr 1fr;

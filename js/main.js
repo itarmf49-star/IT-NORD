@@ -4,9 +4,13 @@
  * Includes: Language switcher, Live chat, Communication buttons, Our Work dropdown
  */
 
+const API = (typeof window !== 'undefined' && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) ? window.location.origin + '/api' : '';
+
 const TRANSLATIONS = {
     ar: {
         ourWork: 'اعمالنا',
+        ourProjects: 'مشاريعنا التعليمية',
+        projectsSubtitle: 'تصميم التطبيقات، إنشاء السيرفرات، وإنشاء المواقع — نصوص وفيديوهات تعليمية',
         homePage: 'الصفحة الرئيسية',
         featuredServices: 'خدماتنا المميزة',
         antennas: 'الهوائيات والاتصال',
@@ -23,6 +27,8 @@ const TRANSLATIONS = {
     },
     en: {
         ourWork: 'Our Work',
+        ourProjects: 'Our Educational Projects',
+        projectsSubtitle: 'App design, server creation, website creation — texts and videos',
         homePage: 'Home',
         featuredServices: 'Featured Services',
         antennas: 'Antennas & Connectivity',
@@ -44,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadFeatures();
     loadTools();
     loadMediaOverrides();
+    loadProjects();
     initOurWorkDropdown();
     initContactButton();
     initChat();
@@ -139,11 +146,20 @@ function getStoredData(key, defaultValue = null) {
     }
 }
 
-function loadFeatures() {
+async function loadFeatures() {
     const grid = document.getElementById('features-grid');
     if (!grid) return;
-
-    const features = getStoredData('features', getDefaultFeatures());
+    let features = getStoredData('features', null);
+    if (API) {
+        try {
+            const res = await fetch(API + '/features');
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.length > 0) features = data;
+            }
+        } catch (_) {}
+    }
+    if (!features || features.length === 0) features = getDefaultFeatures();
     grid.innerHTML = features.map(f => {
         const isVideo = f.url && (f.url.includes('.mp4') || f.url.includes('.webm'));
         return `
@@ -166,7 +182,7 @@ function getDefaultFeatures() {
     ];
 }
 
-function loadTools() {
+async function loadTools() {
     const grid = document.getElementById('tools-grid');
     const titleEl = document.querySelector('#tools-section .section-title');
     if (!grid) return;
@@ -176,7 +192,17 @@ function loadTools() {
         titleEl.textContent = TRANSLATIONS[lang].sectionTitleTools;
     }
 
-    const tools = getStoredData('tools', getDefaultTools());
+    let tools = getStoredData('tools', null);
+    if (API) {
+        try {
+            const res = await fetch(API + '/tools');
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.length > 0) tools = data;
+            }
+        } catch (_) {}
+    }
+    if (!tools || tools.length === 0) tools = getDefaultTools();
     if (tools.length === 0) {
         grid.innerHTML = '<p style="color: var(--gray-500);">لا توجد أدوات مضافة حالياً.</p>';
         return;
@@ -198,12 +224,60 @@ function getDefaultTools() {
     ];
 }
 
-function loadMediaOverrides() {
-    const overrides = getStoredData('media_overrides', {});
+async function loadMediaOverrides() {
+    let overrides = getStoredData('media_overrides', {});
+    if (API) {
+        try {
+            const res = await fetch(API + '/media');
+            if (res.ok) {
+                const data = await res.json();
+                if (data && Object.keys(data).length > 0) overrides = data;
+            }
+        } catch (_) {}
+    }
     Object.entries(overrides).forEach(([id, url]) => {
         const el = document.getElementById(id);
         if (el && url) el.src = url;
     });
+}
+
+async function loadProjects() {
+    const grid = document.getElementById('projects-grid');
+    if (!grid) return;
+    try {
+        if (API) {
+            const res = await fetch(API + '/projects');
+            if (res.ok) {
+                const projects = await res.json();
+                const lang = getCurrentLang();
+                const base = window.location.origin || '';
+                if (projects.length === 0) {
+                    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">لا توجد مشاريع حالياً.</p>';
+                    return;
+                }
+                grid.innerHTML = projects.map(p => {
+                    const title = lang === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar);
+                    const desc = lang === 'ar' ? (p.description_ar || p.description_en) : (p.description_en || p.description_ar);
+                    const shortDesc = (desc || '').slice(0, 100) + ((desc || '').length > 100 ? '...' : '');
+                    const thumb = p.thumbnail_url || 'assets/6-digital-interface.png';
+                    const href = base ? base + '/project/' + p.id : 'project.html?id=' + p.id;
+                    return `
+                        <a href="${href}" class="project-card">
+                            <div class="project-card-thumb">
+                                <img src="${thumb}" alt="${title}">
+                            </div>
+                            <div class="project-card-body">
+                                <h3>${title}</h3>
+                                <p>${shortDesc}</p>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+                return;
+            }
+        }
+    } catch (_) {}
+    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">قم بتشغيل خادم Python لعرض المشاريع.</p>';
 }
 
 function getDefaultCommunicationButtons() {

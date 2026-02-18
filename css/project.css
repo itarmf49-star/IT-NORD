@@ -1,0 +1,79 @@
+/* IT NORD - Single Project Page */
+.project-main {
+    min-height: 100vh;
+    padding-top: 80px;
+    padding-bottom: 4rem;
+}
+
+.project-loading,
+.project-notfound {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--gray-500, #6b7280);
+}
+
+.project-article {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.project-hero {
+    margin-bottom: 2rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg-dark-soft, #14171c);
+    aspect-ratio: 16/9;
+}
+
+.project-thumb {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.project-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.project-video-wrap {
+    width: 100%;
+    height: 100%;
+}
+
+.project-video-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.project-content h1 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--bg-dark, #0d0f12);
+}
+
+.project-description {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #444;
+}
+
+.btn-back {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--gold, #d4af37);
+    color: var(--bg-dark);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.btn-back:hover {
+    background: var(--gold-light, #f4d03f);
+}
