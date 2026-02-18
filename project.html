@@ -8,14 +8,17 @@
     <link rel="stylesheet" href="css/project.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="project-page">
     <header class="header">
         <nav class="nav">
             <div class="nav-left">
-                <a href="/" class="nav-link">← العودة للرئيسية</a>
+                <a href="/" id="nav-home-link" class="nav-link" data-i18n="backToHome">← العودة للرئيسية</a>
             </div>
             <div class="nav-right">
-                <a href="tel:+22247774141" class="nav-contact-btn">📞 اتصل</a>
+                <a href="tel:+22247774141" class="nav-contact-btn" data-i18n="contact">📞 اتصل</a>
+                <button class="lang-switcher" id="lang-switcher" title="تغيير اللغة">
+                    <span class="lang-label" id="lang-label">EN</span>
+                </button>
                 <span class="brand-name">IT NORD</span>
                 <div class="logo-small">
                     <div class="logo-circuit"><span>IT</span></div>
@@ -28,19 +31,27 @@
         <div class="project-loading" id="project-loading">جاري التحميل...</div>
         <article class="project-article hidden" id="project-article">
             <div class="project-hero">
-                <div class="project-thumb" id="project-thumb"></div>
-                <div class="project-video-wrap hidden" id="project-video-wrap">
-                    <iframe id="project-video" allowfullscreen></iframe>
+                <div class="project-video-wrap" id="project-video-wrap">
+                    <div class="project-video-container" id="project-video-container">
+                        <iframe id="project-video" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" title="Video"></iframe>
+                    </div>
+                    <a id="project-video-link" href="#" target="_blank" rel="noopener" class="project-video-overlay hidden" title="تشغيل الفيديو">
+                        <img id="project-video-thumb" alt="" src="">
+                        <span class="project-video-play">▶</span>
+                        <span class="project-video-label" data-i18n="playVideo">تشغيل الفيديو</span>
+                    </a>
                 </div>
             </div>
+            <div class="project-gallery" id="project-gallery"></div>
             <div class="project-content">
                 <h1 id="project-title">عنوان المشروع</h1>
                 <div class="project-description" id="project-description"></div>
             </div>
         </article>
         <div class="project-notfound hidden" id="project-notfound">
-            <p>المشروع غير موجود</p>
-            <a href="/" class="btn-back">العودة للرئيسية</a>
+            <p id="notfound-msg">المشروع غير موجود</p>
+            <p class="notfound-hint">تأكد من تشغيل الخادم (<code>python app.py</code>) وتشغيل <code>python seed_projects.py</code> لإضافة المشاريع.</p>
+            <a href="/" id="notfound-back" class="btn-back" data-i18n="backToHome">العودة للرئيسية</a>
         </div>
     </main>
 
@@ -48,6 +59,7 @@
         <p>IT NORD — For Technical Solutions</p>
     </footer>
 
+    <script src="js/main.js"></script>
     <script>
         (function() {
             const path = window.location.pathname;
@@ -55,55 +67,114 @@
             const pid = match ? parseInt(match[1], 10) : parseInt(new URLSearchParams(location.search).get('id') || '0', 10);
             const API = (location.protocol === 'http:' || location.protocol === 'https:') ? location.origin + '/api' : '';
 
+            const homeHref = (location.protocol === 'http:' || location.protocol === 'https:') ? '/' : 'index.html';
+            document.getElementById('nav-home-link').href = homeHref;
+            document.getElementById('notfound-back').href = homeHref;
+
             const loading = document.getElementById('project-loading');
             const article = document.getElementById('project-article');
             const notfound = document.getElementById('project-notfound');
+            const notfoundMsg = document.getElementById('notfound-msg');
             const titleEl = document.getElementById('project-title');
             const descEl = document.getElementById('project-description');
-            const thumbEl = document.getElementById('project-thumb');
             const videoWrap = document.getElementById('project-video-wrap');
             const videoEl = document.getElementById('project-video');
+            const videoLink = document.getElementById('project-video-link');
+            const videoThumb = document.getElementById('project-video-thumb');
+            const galleryEl = document.getElementById('project-gallery');
+
+            function applyLang() {
+                const lang = localStorage.getItem('itnord_lang') || 'ar';
+                document.documentElement.lang = lang === 'ar' ? 'ar' : 'en';
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                document.getElementById('lang-label').textContent = lang === 'ar' ? 'EN' : 'العربية';
+                const t = typeof TRANSLATIONS !== 'undefined' ? (TRANSLATIONS[lang] || TRANSLATIONS.ar) : {};
+                document.querySelectorAll('[data-i18n]').forEach(el => {
+                    const k = el.getAttribute('data-i18n');
+                    if (t[k]) el.textContent = t[k];
+                });
+            }
+
+            document.getElementById('lang-switcher').onclick = () => {
+                const lang = localStorage.getItem('itnord_lang') || 'ar';
+                localStorage.setItem('itnord_lang', lang === 'ar' ? 'en' : 'ar');
+                location.reload();
+            };
+
+            applyLang();
 
             async function load() {
                 if (!pid) {
-                    showNotFound();
+                    showNotFound('المشروع غير موجود');
+                    return;
+                }
+                if (!API) {
+                    showNotFound('قم بتشغيل خادم Python ثم افتح الموقع من: http://127.0.0.1:5000');
                     return;
                 }
                 try {
                     const res = await fetch(API + '/projects/' + pid);
                     if (!res.ok) {
-                        showNotFound();
+                        showNotFound('المشروع غير موجود');
                         return;
                     }
                     const p = await res.json();
                     const lang = localStorage.getItem('itnord_lang') || 'ar';
                     titleEl.textContent = lang === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar);
                     descEl.textContent = lang === 'ar' ? (p.description_ar || p.description_en) : (p.description_en || p.description_ar);
-                    if (p.video_url) {
-                        videoWrap.classList.remove('hidden');
-                        thumbEl.classList.add('hidden');
-                        let url = p.video_url;
-                        if (url.includes('youtube.com/watch')) {
-                            const v = new URL(url).searchParams.get('v');
-                            url = v ? 'https://www.youtube.com/embed/' + v : p.video_url;
-                        } else if (url.includes('youtu.be/')) {
-                            const v = url.split('youtu.be/')[1];
-                            url = v ? 'https://www.youtube.com/embed/' + v.split('?')[0] : p.video_url;
-                        }
-                        videoEl.src = url;
-                    } else if (p.thumbnail_url) {
-                        thumbEl.innerHTML = '<img src="' + p.thumbnail_url + '" alt="">';
-                        thumbEl.classList.remove('hidden');
-                    }
                     document.title = 'IT NORD | ' + (p.title_ar || p.title_en || 'مشروع');
+
+                    let videoUrl = (p.video_url || '').trim();
+                    let vidId = '';
+                    if (videoUrl) {
+                        if (videoUrl.includes('youtube.com/watch')) {
+                            try { vidId = new URL(videoUrl).searchParams.get('v') || ''; } catch (_) {}
+                        } else if (videoUrl.includes('youtu.be/')) {
+                            vidId = (videoUrl.split('youtu.be/')[1] || '').split('?')[0];
+                        } else {
+                            const m = videoUrl.match(/(?:embed\/|v=)([^?&#]+)/);
+                            vidId = m ? m[1] : '';
+                        }
+                    }
+                    if (vidId) {
+                        videoEl.src = 'https://www.youtube-nocookie.com/embed/' + vidId;
+                        videoLink.href = 'https://www.youtube.com/watch?v=' + vidId;
+                        videoThumb.src = p.thumbnail_url || ('https://img.youtube.com/vi/' + vidId + '/maxresdefault.jpg');
+                        videoThumb.onerror = function() { this.src = 'https://img.youtube.com/vi/' + vidId + '/hqdefault.jpg'; };
+                        document.getElementById('project-video-container').classList.add('hidden');
+                        videoLink.classList.remove('hidden');
+                    } else if (p.thumbnail_url) {
+                        document.getElementById('project-video-container').classList.add('hidden');
+                        videoLink.href = '#';
+                        videoLink.onclick = function(e) { e.preventDefault(); };
+                        videoThumb.src = p.thumbnail_url;
+                        videoLink.querySelector('.project-video-label').textContent = '';
+                        videoLink.querySelector('.project-video-play').style.display = 'none';
+                        videoLink.classList.remove('hidden');
+                    }
+
+                    let imgs = [];
+                    try {
+                        imgs = p.gallery_images ? JSON.parse(p.gallery_images) : [];
+                    } catch (_) {}
+                    if (imgs.length > 0) {
+                        galleryEl.innerHTML = '<h3 class="gallery-title">' + (lang === 'ar' ? 'صور وفيديوهات' : 'Photos & Videos') + '</h3><div class="gallery-grid">' +
+                            imgs.map(u => '<img src="' + u + '" alt="" loading="lazy">').join('') + '</div>';
+                        galleryEl.classList.remove('hidden');
+                    } else {
+                        galleryEl.classList.add('hidden');
+                    }
+
                     loading.classList.add('hidden');
+                    notfound.classList.add('hidden');
                     article.classList.remove('hidden');
                 } catch (e) {
-                    showNotFound();
+                    showNotFound('تعذر تحميل المشروع. تحقق من تشغيل الخادم.');
                 }
             }
 
-            function showNotFound() {
+            function showNotFound(msg) {
+                if (notfoundMsg) notfoundMsg.textContent = msg || 'المشروع غير موجود';
                 loading.classList.add('hidden');
                 article.classList.add('hidden');
                 notfound.classList.remove('hidden');

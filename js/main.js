@@ -23,7 +23,16 @@ const TRANSLATIONS = {
         chatPlaceholder: 'اكتب رسالتك...',
         sectionTitleTools: 'أدواتنا وتقنياتنا',
         digitalImagination: 'الخيال الرقمي',
-        contactUs: 'تواصل معنا'
+        contactUs: 'تواصل معنا',
+        serverCreation: 'إنشاء السيرفرات',
+        camerasSecurity: 'كاميرات المراقبة والأمان',
+        smartBuildings: 'المباني الذكية',
+        backToHome: 'العودة للرئيسية',
+        contact: 'اتصل',
+        dishHeading: 'سنوات من الخبرة في مد جسور الاتصال',
+        dishSubtitle: 'هوائيات محسنة لتجربة إنترنت استثنائية',
+        dishDesc: 'تقنية متقدمة، اتصال مضمون',
+        playVideo: 'تشغيل الفيديو'
     },
     en: {
         ourWork: 'Our Work',
@@ -41,12 +50,22 @@ const TRANSLATIONS = {
         chatPlaceholder: 'Type your message...',
         sectionTitleTools: 'Our Tools & Technologies',
         digitalImagination: 'Digital Imagination',
-        contactUs: 'Contact Us'
+        contactUs: 'Contact Us',
+        serverCreation: 'Server Creation',
+        camerasSecurity: 'Surveillance & Security',
+        smartBuildings: 'Smart Buildings',
+        backToHome: 'Back to Home',
+        contact: 'Contact',
+        dishHeading: 'Years of experience bridging connectivity',
+        dishSubtitle: 'Enhanced antennas for an exceptional internet experience',
+        dishDesc: 'Advanced technology, guaranteed connection',
+        playVideo: 'Play Video'
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
+    initOurWorkLinks();
     loadFeatures();
     loadTools();
     loadMediaOverrides();
@@ -83,6 +102,14 @@ function initDimCarousel() {
         } else {
             intervalId = setInterval(nextSlide, INTERVAL_MS);
         }
+    });
+}
+
+function initOurWorkLinks() {
+    const onServer = (window.location.protocol === 'http:' || window.location.protocol === 'https:');
+    document.querySelectorAll('.our-work-link[data-project]').forEach(a => {
+        const pid = a.dataset.project;
+        if (onServer && pid) a.href = '/project/' + pid;
     });
 }
 
@@ -372,20 +399,69 @@ function initChat() {
         messages.scrollTop = messages.scrollHeight;
     }
 
-    const responses = [
-        'شكراً لتواصلكم! فريقنا سيرد عليكم قريباً.',
-        'هل تحتاجون مزيداً من المعلومات؟ تواصلوا معنا على الهاتف أو واتساب.'
-    ];
-
+    const lang = getCurrentLang();
     send?.addEventListener('click', () => {
         const text = input?.value?.trim();
         if (!text) return;
         addMessage(text, true);
         input.value = '';
-        setTimeout(() => addMessage(responses[Math.floor(Math.random() * responses.length)]), 800);
+        setTimeout(() => addMessage(getChatResponse(text, lang)), 600);
     });
 
     input?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') send?.click();
     });
+}
+
+/**
+ * Chat auto-response: matches company services/offers and responds accordingly.
+ * Responds to existing and non-existing requests with relevant info.
+ */
+function getChatResponse(userText, siteLang) {
+    const q = (userText || '').replace(/\s+/g, ' ').trim();
+    if (!q) return siteLang === 'ar' ? 'كيف يمكنني مساعدتك؟' : 'How can I help you?';
+    const qLower = q.toLowerCase();
+    const hasArabic = /[\u0600-\u06FF]/.test(q);
+    const lang = hasArabic ? 'ar' : (siteLang || 'ar');
+
+    const KB = {
+        ar: [
+            { keys: ['هوائي', 'هوائيات', 'انترنت', 'إشارة', 'واي فاي', 'وايفاي', 'شبكة', 'شبكات'], msg: 'نقدم هوائيات محسنة وتغطية واي فاي شاملة. الجسور اللاسلكية لربط المواقع. تواصلوا: 0022247774141 أو واتساب.' },
+            { keys: ['سيرفر', 'سيرفرات', 'خادم', 'خوادم', 'استضافة', 'hosting'], msg: 'نبني غرف السيرفرات، نثبت الأنظمة، ونضبط الأمان والاستضافة. تصفح "مشاريعنا التعليمية" للفيديوهات.' },
+            { keys: ['موقع', 'مواقع', 'ويب', 'web', 'تطبيق', 'تطبيقات'], msg: 'نصمم تطبيقات ويب وجوال احترافية. واجهات المستخدم، تجربة المستخدم، وإنشاء المواقع. شاهد الفيديوهات في قسم المشاريع.' },
+            { keys: ['كاميرا', 'مراقبة', 'أمان', 'امن'], msg: 'أنظمة مراقبة وأمان متقدمة. كاميرات PTZ وقبة. مراقبة عن بعد 24/7.' },
+            { keys: ['ذكي', 'منزل ذكي', 'smart', 'إنترنت الأشياء', 'iot'], msg: 'المباني الذكية وإنترنت الأشياء. أتمتة المنازل وتكامل الأجهزة.' },
+            { keys: ['تيار خفيف', 'بنية تحتية', 'كابلات'], msg: 'حلول التيار الخفيف والاتصالات. تجهيز البنية التحتية الرقمية.' },
+            { keys: ['سعر', 'تكلفة', 'ثمن', 'كم', 'كم يكلف'], msg: 'للمعرفة الدقيقة بالأسعار والتفاصيل، تواصلوا معنا: هاتف 0022247774141 أو واتساب أو البريد Itnord@outlook.fr' },
+            { keys: ['تواصل', 'اتصل', 'رقم', 'هاتف', 'بريد', 'واتساب', 'contact'], msg: 'هاتف: 0022247774141 | واتساب: 0022247774141 | البريد: Itnord@outlook.fr' },
+            { keys: ['خدمات', 'اعمال', 'ماذا تقدم', 'ماذا تقدمون', 'عروض'], msg: 'نقدم: 1) شبكات وإنترنت وواي فاي وهوائيات 2) التيار الخفيف والمباني الذكية والمراقبة 3) غرف السيرفرات والاستشارات الهندسية. شعارنا: في العالم الفني نصنع المستحيل.' },
+            { keys: ['مرحبا', 'السلام', 'اهلا', 'hello', 'hi', 'هاي'], msg: 'أهلاً! كيف يمكننا مساعدتك؟ اسأل عن خدماتنا، الأسعار، أو التواصل.' },
+            { keys: ['استشارة', 'استشارات', 'فني'], msg: 'نقدم استشارات فنية متكاملة تلائم مشاريعكم. تواصلوا: 0022247774141 أو Itnord@outlook.fr' },
+            { keys: ['فيديو', 'فيديوهات', 'تعليمي', 'تعلم'], msg: 'لدينا فيديوهات تعليمية في قسم "مشاريعنا التعليمية": تصميم التطبيقات، إنشاء السيرفرات، وإنشاء المواقع.' }
+        ],
+        en: [
+            { keys: ['antenna', 'wifi', 'network', 'internet'], msg: 'We provide enhanced antennas and full Wi-Fi coverage. Wireless bridges for site connectivity. Contact: 0022247774141 or WhatsApp.' },
+            { keys: ['server', 'hosting'], msg: 'We build server rooms, install systems, and configure security. Check "Our Projects" for educational videos.' },
+            { keys: ['website', 'web', 'app', 'application', 'ui', 'ux'], msg: 'We design professional web and mobile apps. UI, UX, and website creation. Watch videos in Projects section.' },
+            { keys: ['camera', 'security', 'surveillance'], msg: 'Advanced surveillance and security. PTZ and dome cameras. Remote 24/7 monitoring.' },
+            { keys: ['smart home', 'iot'], msg: 'Smart buildings and IoT. Home automation and device integration.' },
+            { keys: ['price', 'cost', 'how much'], msg: 'For exact pricing, contact us: 0022247774141 or WhatsApp or Itnord@outlook.fr' },
+            { keys: ['contact', 'phone', 'email', 'whatsapp'], msg: 'Phone: 0022247774141 | WhatsApp: 0022247774141 | Email: Itnord@outlook.fr' },
+            { keys: ['services', 'what do you offer', 'offers'], msg: 'We offer: 1) Networks, Wi-Fi, antennas 2) Low current, smart buildings, surveillance 3) Server rooms, engineering. "In the tech world we make the impossible."' },
+            { keys: ['hello', 'hi', 'hey'], msg: 'Hello! How can we help? Ask about our services, pricing, or contact.' },
+            { keys: ['consultation', 'consulting', 'technical'], msg: 'We offer technical consulting. Contact: 0022247774141 or Itnord@outlook.fr' },
+            { keys: ['video', 'tutorial', 'learn'], msg: 'Check "Our Educational Projects" for videos on app design, servers, and websites.' }
+        ]
+    };
+
+    const items = KB[lang] || KB.ar;
+    for (const item of items) {
+        for (const k of item.keys) {
+            if (qLower.includes(k.toLowerCase())) return item.msg;
+        }
+    }
+
+    return lang === 'ar'
+        ? 'شكراً لسؤالك! يمكننا مساعدتك في: الشبكات والواي فاي، السيرفرات، تصميم التطبيقات والمواقع، المراقبة والأمان، المباني الذكية. تواصلوا: 0022247774141 أو واتساب أو Itnord@outlook.fr'
+        : 'Thanks for asking! We help with: networks & Wi-Fi, servers, app & website design, surveillance, smart buildings. Contact: 0022247774141 or Itnord@outlook.fr';
 }

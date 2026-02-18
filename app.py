@@ -75,6 +75,7 @@ def init_db():
             description_en TEXT,
             video_url TEXT,
             thumbnail_url TEXT,
+            gallery_images TEXT,
             sort_order INTEGER DEFAULT 0,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -85,6 +86,11 @@ def init_db():
         );
     ''')
 
+    try:
+        c.execute("ALTER TABLE projects ADD COLUMN gallery_images TEXT")
+    except sqlite3.OperationalError:
+        pass
+
     # Default settings
     c.execute("SELECT COUNT(*) FROM settings")
     if c.fetchone()[0] == 0:
@@ -93,40 +99,175 @@ def init_db():
             [('comm_position', 'left'), ('comm_vertical', 'bottom')]
         )
 
-    # Seed default projects (app design, servers, websites)
+    # Seed default projects with advertising/educational videos
     c.execute("SELECT COUNT(*) FROM projects")
     if c.fetchone()[0] == 0:
+        # Video IDs: App design (Figma/UI), Server setup, Web dev (freeCodeCamp)
         defaults = [
             ('app_design', 'تصميم التطبيقات', 'App Design',
              'دليل شامل لتصميم تطبيقات جوال وويب احترافية. نغطي واجهة المستخدم، تجربة المستخدم، والتكامل مع السيرفرات.',
              'Complete guide to designing professional mobile and web apps. We cover UI, UX, and server integration.',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ', 'assets/6-digital-interface.png', 0),
+             'https://www.youtube.com/embed/R6OD07X_2aI', 'assets/6-digital-interface.png', 0),
             ('app_design', 'واجهات المستخدم', 'User Interfaces',
              'أساسيات تصميم الواجهات التفاعلية. الألوان، الخطوط، والتناسق البصري.',
              'Basics of interactive interface design. Colors, fonts, and visual harmony.',
-             None, 'assets/4-access-control.png', 1),
+             'https://www.youtube.com/embed/6VQEoH5zMIw', 'assets/4-access-control.png', 1),
             ('servers', 'إنشاء السيرفرات', 'Server Creation',
              'خطوات إنشاء وإعداد خوادم احترافية. تثبيت نظام التشغيل، ضبط الأمان، واستضافة التطبيقات.',
              'Steps to create and configure professional servers. OS installation, security hardening, and app hosting.',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ', 'assets/6-digital-interface.png', 0),
+             'https://www.youtube.com/embed/n2v0Jv7pRp8', 'assets/6-digital-interface.png', 0),
             ('servers', 'غرف السيرفرات', 'Server Rooms',
              'تصميم وتجهيز غرف الخوادم: التبريد، الطاقة، والكابلات.',
              'Design and setup of server rooms: cooling, power, and cabling.',
-             None, 'assets/6-digital-interface.png', 1),
+             'https://www.youtube.com/embed/5q2zz1Syw8g', 'assets/6-digital-interface.png', 1),
             ('websites', 'إنشاء المواقع', 'Website Creation',
              'من الصفر إلى النشر: بناء مواقع احترافية متجاوبة مع أحدث التقنيات.',
              'From zero to deploy: building responsive professional websites with latest technologies.',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ', 'assets/5-iot-smart-home.png', 0),
+             'https://www.youtube.com/embed/8pDqJVdNa44', 'assets/5-iot-smart-home.png', 0),
             ('websites', 'السيرفرات والاستضافة', 'Hosting & Servers',
              'استضافة المواقع على خوادم آمنة وسريعة. نصائح لتحسين الأداء.',
              'Hosting websites on secure and fast servers. Performance optimization tips.',
-             None, 'assets/8-antenna.png', 1),
+             'https://www.youtube.com/embed/09TeUXjzpKs', 'assets/8-antenna.png', 1),
         ]
         c.executemany(
-            '''INSERT INTO projects (category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, sort_order)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-            defaults
+            '''INSERT INTO projects (category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images, sort_order)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            [
+                ('app_design', 'تصميم التطبيقات', 'App Design',
+                 'دليل شامل لتصميم تطبيقات جوال وويب احترافية. نغطي واجهة المستخدم، تجربة المستخدم، والتكامل مع السيرفرات.',
+                 'Complete guide to designing professional mobile and web apps. We cover UI, UX, and server integration.',
+                 'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/6-digital-interface.png',
+                 '["https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600","https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]', 0),
+                ('app_design', 'واجهات المستخدم', 'User Interfaces',
+                 'أساسيات تصميم الواجهات التفاعلية. الألوان، الخطوط، والتناسق البصري.',
+                 'Basics of interactive interface design. Colors, fonts, and visual harmony.',
+                 'https://www.youtube-nocookie.com/embed/6VQEoH5zMIw', 'assets/4-access-control.png',
+                 '["https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600","https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600"]', 1),
+                ('servers', 'إنشاء السيرفرات', 'Server Creation',
+                 'خطوات إنشاء وإعداد خوادم احترافية. تثبيت نظام التشغيل، ضبط الأمان، واستضافة التطبيقات.',
+                 'Steps to create and configure professional servers. OS installation, security hardening, and app hosting.',
+                 'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/6-digital-interface.png',
+                 '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600","https://images.unsplash.com/photo-1497366216548-37526070297c?w=600"]', 0),
+                ('servers', 'غرف السيرفرات', 'Server Rooms',
+                 'تصميم وتجهيز غرف الخوادم: التبريد، الطاقة، والكابلات.',
+                 'Design and setup of server rooms: cooling, power, and cabling.',
+                 'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/6-digital-interface.png',
+                 '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600","https://images.unsplash.com/photo-1597852074816-d933c7d2b988?w=600"]', 1),
+                ('websites', 'إنشاء المواقع', 'Website Creation',
+                 'من الصفر إلى النشر: بناء مواقع احترافية متجاوبة مع أحدث التقنيات.',
+                 'From zero to deploy: building responsive professional websites with latest technologies.',
+                 'https://www.youtube-nocookie.com/embed/8pDqJVdNa44', 'assets/5-iot-smart-home.png',
+                 '["https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600","https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600"]', 0),
+                ('websites', 'السيرفرات والاستضافة', 'Hosting & Servers',
+                 'استضافة المواقع على خوادم آمنة وسريعة. نصائح لتحسين الأداء.',
+                 'Hosting websites on secure and fast servers. Performance optimization tips.',
+                 'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/8-antenna.png',
+                 '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600"]', 1),
+            ]
         )
+        extras = [
+            ('antennas', 'الهوائيات والاتصال', 'Antennas & Connectivity',
+             'هوائيات احترافية لتحسين تجربة الإنترنت وربط المواقع عبر جسور اتصال لاسلكية بعيدة المدى.',
+             'Professional antennas for better internet and wireless bridges.',
+             'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/8-antenna.png',
+             '["https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600","https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=600","https://images.unsplash.com/photo-1518770660439-4636190af475?w=600"]', 7),
+            ('networks', 'خدمات الشبكات', 'Network Services',
+             'تصميم وتنفيذ شبكات الإنترنت والواي فاي. توزيع إشارة ذكي يغطي كل زوايا المبنى.',
+             'Design and implementation of internet and Wi-Fi networks.',
+             'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/4-access-control.png',
+             '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]', 8),
+            ('cameras', 'كاميرات المراقبة والأمان', 'Surveillance & Security',
+             'تركيب أحدث أنظمة كاميرات المراقبة لضمان حماية المنشآت والعائلات ومراقبتها عن بعد.',
+             'Installation of advanced surveillance systems for 24/7 protection.',
+             'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/1-ptz-camera.png',
+             '["https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600","https://images.unsplash.com/photo-1558002038-10559092b84b?w=600","https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600"]', 9),
+            ('smart_buildings', 'المباني الذكية', 'Smart Buildings',
+             'أتمتة المباني وإنترنت الأشياء. تحويل المباني العادية إلى مباني ذكية.',
+             'Building automation and IoT for smart infrastructure.',
+             'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/5-iot-smart-home.png',
+             '["https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=600","https://images.unsplash.com/photo-1558002038-10559092b84b?w=600"]', 10),
+            ('integrated', 'الحلول المتكاملة', 'Integrated Solutions',
+             'حلول متكاملة لبيئة متصلة وذكية. ربط الشبكات والأمان والتقنية في نظام واحد.',
+             'Integrated solutions for connected smart environments.',
+             'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/5-iot-smart-home.png',
+             '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]', 11),
+            ('digital', 'الخيال الرقمي', 'Digital Imagination',
+             'حلول تفاعلية تجمع الكاميرات، السحابة، الشبكة والموقع. واجهات متقدمة لإدارة الأنظمة.',
+             'Interactive solutions combining cameras, cloud, network. Advanced control interfaces.',
+             'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/6-digital-interface.png',
+             '["https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600"]', 12),
+        ]
+        c.executemany(
+            '''INSERT INTO projects (category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images, sort_order)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+            extras
+        )
+    else:
+        # Migration: add gallery_images for existing projects by category
+        gallery_by_cat = {
+            'app_design': '["https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600","https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]',
+            'servers': '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600"]',
+            'websites': '["https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600","https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600"]',
+            'antennas': '["https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600","https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=600"]',
+            'networks': '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=600"]',
+            'cameras': '["https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600","https://images.unsplash.com/photo-1558002038-10559092b84b?w=600"]',
+            'smart_buildings': '["https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=600"]',
+            'integrated': '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]',
+            'digital': '["https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600"]',
+        }
+        for cat, gall in gallery_by_cat.items():
+            c.execute("UPDATE projects SET gallery_images = ? WHERE category = ? AND (gallery_images IS NULL OR gallery_images = '')", (gall, cat))
+        # Migration: add new project types if missing (projects 7-12)
+        c.execute("SELECT COUNT(*) FROM projects WHERE category IN ('antennas','networks','cameras','smart_buildings','integrated','digital')")
+        if c.fetchone()[0] == 0:
+            extras = [
+                ('antennas', 'الهوائيات والاتصال', 'Antennas & Connectivity',
+                 'هوائيات احترافية لتحسين تجربة الإنترنت وربط المواقع عبر جسور اتصال لاسلكية بعيدة المدى.',
+                 'Professional antennas for better internet and wireless bridges.',
+                 'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/8-antenna.png',
+                 '["https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600","https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=600","https://images.unsplash.com/photo-1518770660439-4636190af475?w=600"]', 7),
+                ('networks', 'خدمات الشبكات', 'Network Services',
+                 'تصميم وتنفيذ شبكات الإنترنت والواي فاي. توزيع إشارة ذكي يغطي كل زوايا المبنى.',
+                 'Design and implementation of internet and Wi-Fi networks.',
+                 'https://www.youtube-nocookie.com/embed/w7ejDZ8SWv8', 'assets/4-access-control.png',
+                 '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]', 8),
+                ('cameras', 'كاميرات المراقبة والأمان', 'Surveillance & Security',
+                 'تركيب أحدث أنظمة كاميرات المراقبة لضمان حماية المنشآت والعائلات ومراقبتها عن بعد.',
+                 'Installation of advanced surveillance systems for 24/7 protection.',
+                 'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/1-ptz-camera.png',
+                 '["https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600","https://images.unsplash.com/photo-1558002038-10559092b84b?w=600"]', 9),
+                ('smart_buildings', 'المباني الذكية', 'Smart Buildings',
+                 'أتمتة المباني وإنترنت الأشياء. تحويل المباني العادية إلى مباني ذكية.',
+                 'Building automation and IoT for smart infrastructure.',
+                 'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/5-iot-smart-home.png',
+                 '["https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=600","https://images.unsplash.com/photo-1558002038-10559092b84b?w=600"]', 10),
+                ('integrated', 'الحلول المتكاملة', 'Integrated Solutions',
+                 'حلول متكاملة لبيئة متصلة وذكية. ربط الشبكات والأمان والتقنية في نظام واحد.',
+                 'Integrated solutions for connected smart environments.',
+                 'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/5-iot-smart-home.png',
+                 '["https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600","https://images.unsplash.com/photo-1551434678-e076c223a692?w=600"]', 11),
+                ('digital', 'الخيال الرقمي', 'Digital Imagination',
+                 'حلول تفاعلية تجمع الكاميرات، السحابة، الشبكة والموقع. واجهات متقدمة لإدارة الأنظمة.',
+                 'Interactive solutions combining cameras, cloud, network.',
+                 'https://www.youtube-nocookie.com/embed/D6Ac5JpCHmI', 'assets/6-digital-interface.png',
+                 '["https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600","https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=600"]', 12),
+            ]
+            c.executemany(
+                '''INSERT INTO projects (category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images, sort_order)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                extras
+            )
+        # Migration: update placeholder videos
+        video_updates = [
+            (1, 'https://www.youtube.com/embed/R6OD07X_2aI'),   # App design
+            (2, 'https://www.youtube.com/embed/6VQEoH5zMIw'),   # User interfaces
+            (3, 'https://www.youtube.com/embed/n2v0Jv7pRp8'),   # Server creation
+            (4, 'https://www.youtube.com/embed/5q2zz1Syw8g'),   # Server rooms
+            (5, 'https://www.youtube.com/embed/8pDqJVdNa44'),   # Website creation
+            (6, 'https://www.youtube.com/embed/09TeUXjzpKs'),   # Hosting
+        ]
+        for pid, url in video_updates:
+            c.execute("UPDATE projects SET video_url = ? WHERE id = ? AND (video_url IS NULL OR video_url = '' OR video_url LIKE '%dQw4w9WgXcQ%')", (url, pid))
 
     # Seed default features
     c.execute("SELECT COUNT(*) FROM features")
@@ -313,7 +454,7 @@ def list_projects():
 def get_project(pid):
     conn = get_db()
     row = conn.execute(
-        "SELECT id, category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url FROM projects WHERE id = ?",
+        "SELECT id, category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images FROM projects WHERE id = ?",
         (pid,)
     ).fetchone()
     conn.close()

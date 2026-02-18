@@ -1,19 +1,39 @@
-/* IT NORD - Single Project Page */
+/* IT NORD - Single Project Page - aligned with site colors */
+
+body.project-page {
+    background: var(--bg-dark);
+}
+
 .project-main {
     min-height: 100vh;
     padding-top: 80px;
     padding-bottom: 4rem;
+    background: 
+        linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-dark-soft) 30%, #0a0c0f 100%),
+        radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.06) 0%, transparent 50%);
 }
 
 .project-loading,
 .project-notfound {
     text-align: center;
     padding: 4rem 2rem;
-    color: var(--gray-500, #6b7280);
+    color: var(--gray-300);
+    background: transparent;
+}
+
+.notfound-hint {
+    font-size: 0.9rem;
+    margin: 1rem 0;
+}
+
+.notfound-hint code {
+    background: rgba(255,255,255,0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
 }
 
 .project-article {
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -22,8 +42,10 @@
     margin-bottom: 2rem;
     border-radius: 16px;
     overflow: hidden;
-    background: var(--bg-dark-soft, #14171c);
+    background: var(--bg-dark-soft);
     aspect-ratio: 16/9;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.2);
 }
 
 .project-thumb {
@@ -43,6 +65,8 @@
 .project-video-wrap {
     width: 100%;
     height: 100%;
+    position: relative;
+    background: var(--bg-dark);
 }
 
 .project-video-wrap iframe {
@@ -51,23 +75,32 @@
     border: none;
 }
 
+.project-content {
+    background: var(--bg-dark-soft);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
 .project-content h1 {
     font-size: 1.75rem;
     margin-bottom: 1rem;
-    color: var(--bg-dark, #0d0f12);
+    color: var(--white);
 }
 
 .project-description {
     font-size: 1.05rem;
     line-height: 1.8;
-    color: #444;
+    color: var(--gray-300);
 }
 
 .btn-back {
     display: inline-block;
     margin-top: 1rem;
     padding: 0.6rem 1.2rem;
-    background: var(--gold, #d4af37);
+    background: var(--gold);
     color: var(--bg-dark);
     text-decoration: none;
     border-radius: 8px;
@@ -75,5 +108,115 @@
 }
 
 .btn-back:hover {
-    background: var(--gold-light, #f4d03f);
+    background: var(--gold-light);
+}
+
+/* Gallery - spaced and consecutive images */
+.project-gallery {
+    margin: 2rem 0;
+    padding: 2rem;
+    background: var(--bg-dark-soft);
+    border-radius: 16px;
+    border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.project-gallery.hidden {
+    display: none;
+}
+
+.gallery-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+    color: var(--white);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+.gallery-grid img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    transition: all 0.3s ease;
+}
+
+.gallery-grid img:hover {
+    border-color: var(--gold);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+}
+
+/* Video overlay - thumbnail + play (reliable when embed fails) */
+.project-video-wrap {
+    min-height: 200px;
+}
+
+.project-video-container {
+    width: 100%;
+    height: 100%;
+}
+
+.project-video-container.hidden {
+    display: none;
+}
+
+.project-video-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-dark);
+    text-decoration: none;
+    color: var(--white);
+}
+
+.project-video-overlay.hidden {
+    display: none;
+}
+
+.project-video-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+}
+
+.project-video-play {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    background: rgba(212, 175, 55, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--bg-dark);
+}
+
+.project-video-label {
+    position: relative;
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+}
+
+/* Footer */
+body.project-page .footer {
+    background: var(--bg-dark-soft);
+    color: var(--gray-300);
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
 }
