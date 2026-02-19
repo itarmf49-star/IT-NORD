@@ -32,7 +32,57 @@ const TRANSLATIONS = {
         dishHeading: 'سنوات من الخبرة في مد جسور الاتصال',
         dishSubtitle: 'هوائيات محسنة لتجربة إنترنت استثنائية',
         dishDesc: 'تقنية متقدمة، اتصال مضمون',
-        playVideo: 'تشغيل الفيديو'
+        playVideo: 'تشغيل الفيديو',
+        // Services section
+        serviceDistribute: 'خدمات توزيع تضمن وصول',
+        signalStrong: 'الإشارة بقوة',
+        wifiCoverageTitle: 'حوّل منزلك إلى منطقة تغطية كاملة',
+        wifiCoverageDesc: 'شبكة منزلية بلا حدود: توزيع إنترنت يغطي كل احتياجات عائلتك المتصلة.',
+        digitalFoundation: 'من شبكات البيانات إلى أنظمة الأمان والتيار الخفيف، نحن نبني الأساس الرقمي.',
+        smartBuildingsTitle: 'المباني الذكية',
+        smartBuildingsDesc: 'حلول التيار الخفيف والاتصالات للمباني الذكية: نوفر أساساً تكنولوجياً متيناً لمنشآتك.',
+        // Digital Imagination slides
+        dimSubtitle: 'Where technology meets creativity',
+        dimSlide1Title: 'كاميرات المراقبة المتطورة',
+        dimSlide1Desc: 'حلول أمان متقدمة بكاميرات PTZ عالية الدقة. مراقبة 360 درجة مع رؤية ليلية بالأشعة تحت الحمراء لحماية منشآتك على مدار الساعة.',
+        dimSlide2Title: 'تدقيق الطاقة والحرارة',
+        dimSlide2Desc: 'تحليل احترافي لفقدان الطاقة في المباني. نحدد نقاط التحسين ونقلل الفواتير عبر حلول عزل وكفاءة طاقية متكاملة.',
+        dimSlide3Title: 'أنظمة المراقبة الذكية',
+        dimSlide3Desc: 'كاميرات قبة عصرية تصميم أنيق وتكامل سلس مع أسقف المباني. تغطية شاملة مع أجهزة استشعار عالية الحساسية.',
+        dimSlide4Title: 'تحكم الوصول والفيديو',
+        dimSlide4Desc: 'أنظمة فيديو وتحكم دخول متكاملة: بوابات فيديو IP، مراقبة مركزية، وربط كاميرات وقراءات البطاقات في شبكة أمان واحدة.',
+        dimSlide5Title: 'إنترنت الأشياء والمنزل الذكي',
+        dimSlide5Desc: 'توصيل كل غرفة بشبكة واحدة. أجهزة ذكية مترابطة من غرفة المعيشة إلى المطبخ والمكتب، راحة وكفاءة في مكان واحد.',
+        dimSlide6Title: 'الخيال الرقمي والتقنية',
+        dimSlide6Desc: 'حلول تفاعلية تجمع الكاميرات، السحابة، الشبكة والموقع. واجهات متقدمة لإدارة ومراقبة أنظمتك من مكان واحد.',
+        dimSlide7Title: 'حماية احترافية بأعلى المعايير',
+        dimSlide7Desc: 'كاميرات PTZ بقدرات تكبير وحركة دقيقة. حلول أمان موثوقة للمؤسسات والمباني التجارية والسكنية.',
+        dimSlide8Title: 'الهوائيات والاتصال اللاسلكي',
+        dimSlide8Desc: 'هوائيات احترافية لربط المواقع وتوفير إنترنت عالي السرعة. جسور لاسلكية بعيدة المدى لتغطية مثالية.',
+        dimSlide9Title: 'أنظمة التسخين الذكية',
+        dimSlide9Desc: 'منظمات حرارة لاسلكية لكل منطقة. وضع اقتصاد ووضع راحة وبرمجة يومية وأسبوعية لتوفير الطاقة.',
+        // Business Summary
+        businessSummaryTitle: 'IT NORD BUSINESS SUMMARY',
+        businessSummaryIntro: 'IT NORD is a technical partner specialized in providing cutting-edge engineering solutions for infrastructure and smart systems, with a focus on quality and precision in execution.',
+        businessSummaryIntroAr: 'شريكاً تقنياً متخصصاً في تقديم الحلول الهندسية المتطورة للبنية التحتية والأنظمة الذكية، مع التركيز على الجودة والدقة في التنفيذ',
+        serviceCat1Title: '1. حلول الشبكات والاتصالات (Network & Connectivity)',
+        serviceCat1Item1: 'تصميم وتنفيذ شبكات الإنترنت: توفير بنية تحتية قوية للبيانات والاتصالات تعتمد عليها المباني الحديثة.',
+        serviceCat1Item2: 'حلول الواي فاي (Wi-Fi Solutions): تقنيات متقدمة تضمن تغطية لاسلكية شاملة وقوية لكل زوايا المنزل أو المبنى (توزيع إشارة ذكي).',
+        serviceCat1Item3: 'الجسور اللاسلكية والهوائيات: تركيب هوائيات احترافية لتحسين تجربة الإنترنت وربط المواقع عبر جسور اتصال لاسلكية بعيدة المدى.',
+        serviceCat2Title: '2. أنظمة التيار الخفيف والمباني الذكية (Low Current & Smart Home)',
+        serviceCat2Item1: 'أتمتة المباني: تحويل المباني العادية إلى مباني ذكية توفر أساساً تكنولوجياً متطوراً.',
+        serviceCat2Item2: 'أنظمة المراقبة والأمان: تركيب أحدث أنظمة كاميرات المراقبة لضمان حماية المنشآت والعائلات ومراقبتها عن بعد في أي وقت ومن أي مكان.',
+        serviceCat2Item3: 'تكامل الأنظمة: ربط الأجهزة المختلفة (هاتف، حاسوب، تلفاز) عبر وحدات وكابلات متطورة لضمان اتصال ذكي وآمن (Modules CPL).',
+        serviceCat3Title: '3. الخدمات الهندسية والاحترافية (Engineering Services)',
+        serviceCat3Item1: 'الأساس الرقمي: بناء وتجهيز غرف السيرفرات (Server Racks) وتنظيم الكابلات باحترافية عالية لضمان استقرار الخدمة.',
+        serviceCat3Item2: 'الاستشارات الفنية: تقديم حلول هندسية متكاملة تتناسب مع احتياجات المشاريع المتطورة والمباني الحديثة.',
+        serviceCat3Item3: 'الدقة والكفاءة: شعار الشركة "في العالم الفني نصنع المستحيل".',
+        // Extra content
+        integratedSolutionsText: 'حلول متكاملة لبيئة متصلة وذكية.',
+        securityText: 'منزلك في أمان دائماً: راقب واطمئن أينما كنت.',
+        // Contact
+        whatsapp: 'واتساب',
+        email: 'البريد'
     },
     en: {
         ourWork: 'Our Work',
@@ -59,7 +109,57 @@ const TRANSLATIONS = {
         dishHeading: 'Years of experience bridging connectivity',
         dishSubtitle: 'Enhanced antennas for an exceptional internet experience',
         dishDesc: 'Advanced technology, guaranteed connection',
-        playVideo: 'Play Video'
+        playVideo: 'Play Video',
+        // Services section
+        serviceDistribute: 'Distribution services ensure',
+        signalStrong: 'strong signal reach',
+        wifiCoverageTitle: 'Transform your home into a full coverage zone',
+        wifiCoverageDesc: 'Boundless home network: Internet distribution covering all your family\'s connected needs.',
+        digitalFoundation: 'From data networks to security and low-current systems, we build the digital foundation.',
+        smartBuildingsTitle: 'Smart Buildings',
+        smartBuildingsDesc: 'Low-current and communications solutions for smart buildings: We provide a solid technological foundation for your facilities.',
+        // Digital Imagination slides
+        dimSubtitle: 'Where technology meets creativity',
+        dimSlide1Title: 'Advanced Surveillance Cameras',
+        dimSlide1Desc: 'Advanced security solutions with high-definition PTZ cameras. 360-degree monitoring with infrared night vision to protect your facilities around the clock.',
+        dimSlide2Title: 'Energy and Heat Auditing',
+        dimSlide2Desc: 'Professional analysis of energy loss in buildings. We identify improvement points and reduce bills through integrated insulation and energy efficiency solutions.',
+        dimSlide3Title: 'Smart Surveillance Systems',
+        dimSlide3Desc: 'Modern dome cameras with elegant design and seamless integration with building ceilings. Comprehensive coverage with highly sensitive sensors.',
+        dimSlide4Title: 'Access Control and Video',
+        dimSlide4Desc: 'Integrated video and access control systems: IP video intercoms, centralized monitoring, and linking cameras and card readers in a single security network.',
+        dimSlide5Title: 'Internet of Things and Smart Home',
+        dimSlide5Desc: 'Connecting every room to a single network. Interconnected smart devices from living room to kitchen and office, comfort and efficiency in one place.',
+        dimSlide6Title: 'Digital Imagination and Technology',
+        dimSlide6Desc: 'Interactive solutions combining cameras, cloud, network, and location. Advanced interfaces for managing and monitoring your systems from one place.',
+        dimSlide7Title: 'Professional Protection to Highest Standards',
+        dimSlide7Desc: 'PTZ cameras with precise zoom and movement capabilities. Reliable security solutions for institutions and commercial and residential buildings.',
+        dimSlide8Title: 'Antennas and Wireless Connectivity',
+        dimSlide8Desc: 'Professional antennas for connecting sites and providing high-speed internet. Long-range wireless bridges for optimal coverage.',
+        dimSlide9Title: 'Smart Heating Systems',
+        dimSlide9Desc: 'Wireless thermostats for each zone. Economy mode, comfort mode, and daily and weekly programming to save energy.',
+        // Business Summary
+        businessSummaryTitle: 'IT NORD BUSINESS SUMMARY',
+        businessSummaryIntro: 'IT NORD is a technical partner specialized in providing cutting-edge engineering solutions for infrastructure and smart systems, with a focus on quality and precision in execution.',
+        businessSummaryIntroAr: 'شريكاً تقنياً متخصصاً في تقديم الحلول الهندسية المتطورة للبنية التحتية والأنظمة الذكية، مع التركيز على الجودة والدقة في التنفيذ',
+        serviceCat1Title: '1. Network & Connectivity Solutions',
+        serviceCat1Item1: 'Internet network design and implementation: Providing strong data and communications infrastructure that modern buildings rely on.',
+        serviceCat1Item2: 'Wi-Fi Solutions: Advanced technologies ensuring comprehensive and strong wireless coverage for every corner of your home or building (smart signal distribution).',
+        serviceCat1Item3: 'Wireless bridges and antennas: Installation of professional antennas to improve internet experience and connect sites via long-range wireless communication bridges.',
+        serviceCat2Title: '2. Low Current & Smart Home Systems',
+        serviceCat2Item1: 'Building automation: Transforming ordinary buildings into smart buildings providing advanced technological foundation.',
+        serviceCat2Item2: 'Surveillance and security systems: Installation of latest surveillance camera systems to ensure protection of facilities and families, monitoring remotely anytime, anywhere.',
+        serviceCat2Item3: 'System integration: Connecting different devices (phone, computer, TV) via advanced modules and cables ensuring smart and secure connection (CPL Modules).',
+        serviceCat3Title: '3. Engineering & Professional Services',
+        serviceCat3Item1: 'Digital foundation: Building and equipping server rooms (Server Racks) and organizing cables with high professionalism to ensure service stability.',
+        serviceCat3Item2: 'Technical consulting: Providing integrated engineering solutions suitable for advanced projects and modern buildings.',
+        serviceCat3Item3: 'Precision and efficiency: Company motto "In the technical world we make the impossible."',
+        // Extra content
+        integratedSolutionsText: 'Integrated solutions for a connected and smart environment.',
+        securityText: 'Your home is always secure: Monitor and rest assured wherever you are.',
+        // Contact
+        whatsapp: 'WhatsApp',
+        email: 'Email'
     }
 };
 
@@ -162,6 +262,11 @@ function applyTranslations(lang) {
     });
     document.querySelectorAll('.hero-slogan.en').forEach(el => el.style.display = lang === 'en' ? 'block' : 'none');
     document.querySelectorAll('.hero-slogan.ar').forEach(el => el.style.display = lang === 'ar' ? 'block' : 'none');
+    // Show/hide language-specific intro paragraphs
+    const summaryIntro = document.querySelector('.summary-intro');
+    const summaryIntroAr = document.querySelector('.summary-intro-ar');
+    if (summaryIntro) summaryIntro.style.display = lang === 'en' ? 'block' : 'none';
+    if (summaryIntroAr) summaryIntroAr.style.display = lang === 'ar' ? 'block' : 'none';
 }
 
 function getStoredData(key, defaultValue = null) {
