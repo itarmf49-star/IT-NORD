@@ -543,7 +543,13 @@ def static_file(path):
     return send_from_directory('.', path)
 
 
+# Initialize database when module is imported (for Vercel/serverless)
+if not os.environ.get('SKIP_INIT_DB'):
+    try:
+        init_db()
+    except Exception as e:
+        print(f'Database init warning: {e}')
+
 if __name__ == '__main__':
-    init_db()
     print('Database initialized. Visit http://127.0.0.1:5000')
     app.run(host='0.0.0.0', port=5000, debug=True)
