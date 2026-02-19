@@ -1,4 +1,4 @@
-# حل مشكلة Vercel NOT_FOUND
+# حل أخطاء Vercel (NOT_FOUND و FUNCTION_INVOCATION_FAILED)
 
 ## 1. المشكلة (Root Cause)
 
@@ -16,6 +16,12 @@
 - Vercel يبحث عن routes في `api/` أو static files
 - بدون `api/index.py` → NOT_FOUND
 - Flask app يحتاج WSGI adapter ليعمل كـ serverless function
+
+### خطأ 500 / FUNCTION_INVOCATION_FAILED (الدالة تتعطل)
+
+- **السبب:** استخدام دالة `handler(request)` بينما Vercel يتوقع إما `app` (WSGI) أو صنف `handler` من `BaseHTTPRequestHandler`.
+- **الحل:** في `api/index.py` نعرض فقط `app` (استيراد من app.py) — لا دالة handler مخصصة.
+- **قاعدة البيانات:** على Vercel القرص للقراءة فقط ما عدا `/tmp`. تم ضبط `DB_PATH = /tmp/itnord.db` عند وجود `VERCEL`.
 
 ## 2. المفهوم الأساسي
 

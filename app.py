@@ -14,7 +14,11 @@ from flask_cors import CORS
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
 
-DB_PATH = Path(__file__).parent / 'data' / 'itnord.db'
+# On Vercel, filesystem is read-only except /tmp
+if os.environ.get('VERCEL'):
+    DB_PATH = Path('/tmp') / 'itnord.db'
+else:
+    DB_PATH = Path(__file__).parent / 'data' / 'itnord.db'
 
 
 def get_db():
