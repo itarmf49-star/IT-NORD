@@ -9,6 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
     showDashboard();
     initSections();
     initSaveHandlers();
+    loadAnalytics();
+    loadLeads();
+    loadServicesEditor();
+    loadPortfolioEditor();
+    loadBlogEditor();
+    loadSiteSettings();
+    setInterval(loadAnalytics, 60000);
 });
 
 function showDashboard() {
@@ -45,6 +52,232 @@ async function loadEditorData() {
         showToast('تحقق من تشغيل خادم Python (python app.py)');
     }
     initAddTool();
+}
+
+async function loadAnalytics() {
+    try {
+        const r = await fetch(API + '/analytics');
+        if (!r.ok) return;
+        const d = await r.json();
+        const byId = id => document.getElementById(id);
+        if (byId('stat-visitors-today')) byId('stat-visitors-today').textContent = d.visitors_today;
+        if (byId('stat-visitors-total')) byId('stat-visitors-total').textContent = d.visitors_total;
+        if (byId('stat-pending-quotes')) byId('stat-pending-quotes').textContent = d.pending_quotes;
+        if (byId('stat-services')) byId('stat-services').textContent = d.services_count;
+        if (byId('stat-projects')) byId('stat-projects').textContent = d.projects_count;
+    } catch (_) {}
+}
+document.querySelector('.analytics-link[data-goto="leads"]')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.querySelector('.nav-item[data-section="leads"]')?.click();
+});
+
+async function loadLeads(status) {
+    const tbody = document.getElementById('leads-tbody');
+    if (!tbody) return;
+    try {
+        const url = status ? API + '/quotes?status=' + status : API + '/quotes';
+        const r = await fetch(url);
+        if (!r.ok) return;
+        const list = await r.json();
+        tbody.innerHTML = list.map(q => `
+            <tr>
+                <td>${(q.name || '').replace(/</g, '&lt;')}</td>
+                <td>${(q.service_type || '').replace(/</g, '&lt;')}</td>
+                <td>${(q.phone || '').replace(/</g, '&lt;')}</td>
+                <td><span class="status-${q.status || 'pending'}">${q.status === 'answered' ? 'تم الرد' : 'معلق'}</span></td>
+                <td>${(q.created_at || '').slice(0, 10)}</td>
+                <td>
+                    ${(q.status || 'pending') === 'pending' ?
+                        `<button class="btn-mark" data-quote-id="${q.id}">تم الرد</button>` : '-'}
+                </td>
+            </tr>
+        `).join('');
+        tbody.querySelectorAll('.btn-mark').forEach(btn => {
+            btn.onclick = async () => {
+                try {
+                    await fetch(API + '/quotes/' + btn.dataset.quoteId, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ status: 'answered' })
+                    });
+                    loadLeads(document.querySelector('.filter-btn.active')?.dataset?.status || '');
+                    loadAnalytics();
+                    showToast('تم تحديث الحالة');
+                } catch (e) { showToast('فشل'); }
+            };
+        });
+    } catch (_) { tbody.innerHTML = '<tr><td colspan="6">لا توجد بيانات</td></tr>'; }
+}
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        loadLeads(btn.dataset.status || '');
+    });
+});
+
+async function loadServicesEditor() {
+    const container = document.getElementById('services-editor');
+    if (!container) return;
+    let data = [];
+    try {
+        const r = await fetch(API + '/services');
+        if (r.ok) data = await r.json();
+    } catch (_) {}
+    renderServicesEditor(container, data);
+}
+function renderServicesEditor(container, data) {
+    container.innerHTML = data.map((s, i) => `
+        <div class="service-editor-item" data-service-id="${s.id || 'new'}">
+            <div class="project-editor-header">
+                <span>${s.title_ar || s.title_en || 'خدمة ' + (i + 1)}</span>
+                ${s.id ? `<button class="btn-remove" data-remove-service="${s.id}">حذف</button>` : ''}
+            </div>
+            <label>العنوان (عربي)</label>
+            <input type="text" data-service-title-ar="${s.id || i}" value="${(s.title_ar || '').replace(/"/g, '&quot;')}" placeholder="اسم الخدمة">
+            <label>العنوان (إنجليزي)</label>
+            <input type="text" data-service-title-en="${s.id || i}" value="${(s.title_en || '').replace(/"/g, '&quot;')}">
+            <label>الوصف (عربي)</label>
+            <textarea data-service-desc-ar="${s.id || i}" rows="2">${(s.description_ar || '').replace(/</g, '&lt;')}</textarea>
+            <label>السعر (عربي)</label>
+            <input type="text" data-service-price-ar="${s.id || i}" value="${(s.price_ar || '').replace(/"/g, '&quot;')}" placeholder="يبدأ من ...">
+            <label>السعر (إنجليزي)</label>
+            <input type="text" data-service-price-en="${s.id || i}" value="${(s.price_en || '').replace(/"/g, '&quot;')}">
+        </div>
+    `).join('');
+    container.querySelectorAll('[data-remove-service]').forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm('حذف هذه الخدمة؟')) return;
+            try {
+                await fetch(API + '/services/' + btn.dataset.removeService, { method: 'DELETE' });
+                loadServicesEditor();
+                loadAnalytics();
+            } catch (e) { showToast('فشل'); }
+        };
+    });
+}
+document.getElementById('add-service-btn')?.addEventListener('click', async () => {
+    try {
+        const r = await fetch(API + '/services', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title_ar: 'خدمة جديدة', title_en: 'New Service' })
+        });
+        const j = await r.json();
+        if (j.ok) { loadServicesEditor(); showToast('تمت الإضافة'); }
+    } catch (e) { showToast('فشل'); }
+});
+
+async function loadPortfolioEditor() {
+    const container = document.getElementById('portfolio-editor');
+    if (!container) return;
+    let data = [];
+    try {
+        const r = await fetch(API + '/portfolio');
+        if (r.ok) data = await r.json();
+    } catch (_) {}
+    container.innerHTML = data.map((p, i) => `
+        <div class="project-editor-item" data-portfolio-id="${p.id}">
+            <div class="project-editor-header">
+                <span>${p.label_ar || p.label_en || 'صورة ' + (i + 1)}</span>
+                <button class="btn-remove" data-remove-portfolio="${p.id}">حذف</button>
+            </div>
+            <label>رابط الصورة</label>
+            <input type="text" data-portfolio-url="${p.id}" value="${(p.image_url || '').replace(/"/g, '&quot;')}" placeholder="https://... أو base64">
+            <label>التسمية (عربي)</label>
+            <input type="text" data-portfolio-label-ar="${p.id}" value="${(p.label_ar || '').replace(/"/g, '&quot;')}">
+            <label>نوع (قبل/بعد)</label>
+            <select data-portfolio-type="${p.id}">
+                <option value="before" ${p.type === 'before' ? 'selected' : ''}>قبل</option>
+                <option value="after" ${(p.type || 'after') === 'after' ? 'selected' : ''}>بعد</option>
+            </select>
+        </div>
+    `).join('');
+    container.querySelectorAll('[data-remove-portfolio]').forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm('حذف؟')) return;
+            try {
+                await fetch(API + '/portfolio/' + btn.dataset.removePortfolio, { method: 'DELETE' });
+                loadPortfolioEditor();
+            } catch (e) { showToast('فشل'); }
+        };
+    });
+}
+document.getElementById('add-portfolio-btn')?.addEventListener('click', async () => {
+    try {
+        const r = await fetch(API + '/portfolio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image_url: '', label_ar: '', type: 'after' })
+        });
+        const j = await r.json();
+        if (j.ok) { loadPortfolioEditor(); showToast('تمت الإضافة'); }
+    } catch (e) { showToast('فشل'); }
+});
+
+async function loadBlogEditor() {
+    const container = document.getElementById('blog-editor');
+    if (!container) return;
+    let data = [];
+    try {
+        const r = await fetch(API + '/blog');
+        if (r.ok) data = await r.json();
+    } catch (_) {}
+    container.innerHTML = data.map((b, i) => `
+        <div class="project-editor-item" data-blog-id="${b.id}">
+            <div class="project-editor-header">
+                <span>${b.title_ar || b.title_en || 'مقال ' + (i + 1)}</span>
+                <a href="/blog.html?slug=${b.slug || b.id}" target="_blank" class="project-view-link">عرض</a>
+                <button class="btn-remove" data-remove-blog="${b.id}">حذف</button>
+            </div>
+            <label>العنوان (عربي)</label>
+            <input type="text" data-blog-title-ar="${b.id}" value="${(b.title_ar || '').replace(/"/g, '&quot;')}">
+            <label>المحتوى (عربي)</label>
+            <textarea data-blog-content-ar="${b.id}" rows="4">${(b.content_ar || '').replace(/</g, '&lt;')}</textarea>
+            <label>الرابط (slug)</label>
+            <input type="text" data-blog-slug="${b.id}" value="${(b.slug || '').replace(/"/g, '&quot;')}">
+        </div>
+    `).join('');
+    container.querySelectorAll('[data-remove-blog]').forEach(btn => {
+        btn.onclick = async () => {
+            if (!confirm('حذف المقال؟')) return;
+            try {
+                await fetch(API + '/blog/' + btn.dataset.removeBlog, { method: 'DELETE' });
+                loadBlogEditor();
+            } catch (e) { showToast('فشل'); }
+        };
+    });
+}
+document.getElementById('add-blog-btn')?.addEventListener('click', async () => {
+    try {
+        const r = await fetch(API + '/blog', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title_ar: 'مقال جديد', content_ar: '' })
+        });
+        const j = await r.json();
+        if (j.ok) { loadBlogEditor(); showToast('تمت الإضافة'); }
+    } catch (e) { showToast('فشل'); }
+});
+
+async function loadSiteSettings() {
+    try {
+        const r = await fetch(API + '/site-settings');
+        if (!r.ok) return;
+        const d = await r.json();
+        const set = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val || el.value; };
+        set('setting-whatsapp', d.whatsapp_number || '22247774141');
+        set('setting-logo', d.logo_url);
+        set('setting-color-gold', d.color_gold || '#d4af37');
+        set('setting-color-gold-hex', d.color_gold || '#d4af37');
+        set('setting-seo-keywords', d.seo_keywords);
+        set('setting-seo-desc', d.seo_description);
+        document.getElementById('setting-color-gold')?.addEventListener('input', (e) => {
+            const hex = document.getElementById('setting-color-gold-hex');
+            if (hex) hex.value = e.target.value;
+        });
+    } catch (_) {}
 }
 
 const MEDIA_KEYS = ['dish-hero-img', 'network-img', 'wifi-img', 'server-img', 'smart-img', 'integrated-img', 'security-img'];
@@ -376,6 +609,10 @@ function initSaveHandlers() {
                 else if (type === 'tools') await saveTools();
                 else if (type === 'buttons') await saveButtons();
                 else if (type === 'projects') await saveProjects();
+                else if (type === 'services') await saveServices();
+                else if (type === 'portfolio') await savePortfolio();
+                else if (type === 'blog') await saveBlog();
+                else if (type === 'settings') await saveSettings();
             } catch (e) {
                 showToast('فشل الحفظ. تحقق من تشغيل الخادم.');
             }
@@ -470,6 +707,69 @@ async function saveProjects() {
         });
     }
     showToast('تم حفظ المشاريع بنجاح');
+}
+
+async function saveServices() {
+    const items = document.querySelectorAll('.service-editor-item');
+    for (const item of items) {
+        const id = item.dataset.serviceId;
+        if (id === 'new') continue;
+        const sid = parseInt(id, 10);
+        if (isNaN(sid)) continue;
+        const payload = {
+            title_ar: item.querySelector(`[data-service-title-ar="${sid}"]`)?.value || '',
+            title_en: item.querySelector(`[data-service-title-en="${sid}"]`)?.value || '',
+            description_ar: item.querySelector(`[data-service-desc-ar="${sid}"]`)?.value || '',
+            description_en: '',
+            price_ar: item.querySelector(`[data-service-price-ar="${sid}"]`)?.value || '',
+            price_en: item.querySelector(`[data-service-price-en="${sid}"]`)?.value || ''
+        };
+        await fetch(API + '/services/' + sid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    }
+    showToast('تم حفظ الخدمات');
+    loadAnalytics();
+}
+async function savePortfolio() {
+    const items = document.querySelectorAll('[data-portfolio-id]');
+    for (const item of items) {
+        const pid = parseInt(item.dataset.portfolioId, 10);
+        if (isNaN(pid)) continue;
+        const payload = {
+            image_url: item.querySelector(`[data-portfolio-url="${pid}"]`)?.value || '',
+            label_ar: item.querySelector(`[data-portfolio-label-ar="${pid}"]`)?.value || '',
+            label_en: '',
+            type: item.querySelector(`[data-portfolio-type="${pid}"]`)?.value || 'after'
+        };
+        await fetch(API + '/portfolio/' + pid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    }
+    showToast('تم حفظ المعرض');
+}
+async function saveBlog() {
+    const items = document.querySelectorAll('[data-blog-id]');
+    for (const item of items) {
+        const bid = parseInt(item.dataset.blogId, 10);
+        if (isNaN(bid)) continue;
+        const payload = {
+            title_ar: item.querySelector(`[data-blog-title-ar="${bid}"]`)?.value || '',
+            title_en: '',
+            content_ar: item.querySelector(`[data-blog-content-ar="${bid}"]`)?.value || '',
+            content_en: '',
+            slug: item.querySelector(`[data-blog-slug="${bid}"]`)?.value || ''
+        };
+        await fetch(API + '/blog/' + bid, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    }
+    showToast('تم حفظ المقالات');
+}
+async function saveSettings() {
+    const payload = {
+        whatsapp_number: document.getElementById('setting-whatsapp')?.value || '22247774141',
+        logo_url: document.getElementById('setting-logo')?.value || '',
+        color_gold: document.getElementById('setting-color-gold-hex')?.value || document.getElementById('setting-color-gold')?.value || '#d4af37',
+        seo_keywords: document.getElementById('setting-seo-keywords')?.value || '',
+        seo_description: document.getElementById('setting-seo-desc')?.value || ''
+    };
+    await fetch(API + '/site-settings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    showToast('تم حفظ الإعدادات');
 }
 
 document.getElementById('add-project-btn')?.addEventListener('click', async () => {

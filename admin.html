@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IT NORD — لوحة التحكم</title>
     <link rel="stylesheet" href="css/admin.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -18,9 +18,29 @@
                 <span>IT NORD</span>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active" data-section="media">
+                <a href="#" class="nav-item active" data-section="analytics">
+                    <span class="nav-icon">📊</span>
+                    الإحصائيات
+                </a>
+                <a href="#" class="nav-item" data-section="leads">
+                    <span class="nav-icon">📋</span>
+                    طلبات العملاء
+                </a>
+                <a href="#" class="nav-item" data-section="media">
                     <span class="nav-icon">🖼️</span>
                     الصور والفيديو
+                </a>
+                <a href="#" class="nav-item" data-section="services">
+                    <span class="nav-icon">⚙️</span>
+                    إدارة الخدمات
+                </a>
+                <a href="#" class="nav-item" data-section="portfolio">
+                    <span class="nav-icon">🖼️</span>
+                    معرض الأعمال
+                </a>
+                <a href="#" class="nav-item" data-section="blog">
+                    <span class="nav-icon">📝</span>
+                    المدونة التقنية
                 </a>
                 <a href="#" class="nav-item" data-section="features">
                     <span class="nav-icon">✨</span>
@@ -38,6 +58,10 @@
                     <span class="nav-icon">📌</span>
                     أزرار التواصل
                 </a>
+                <a href="#" class="nav-item" data-section="settings">
+                    <span class="nav-icon">⚙️</span>
+                    الإعدادات التقنية
+                </a>
                 <a href="/" class="nav-item" target="_blank">
                     <span class="nav-icon">🌐</span>
                     عرض الموقع
@@ -50,8 +74,111 @@
                 <p>إدارة محتوى موقع IT NORD</p>
             </header>
 
+            <!-- Analytics Section -->
+            <section id="section-analytics" class="admin-section">
+                <h3>الإحصائيات العامة</h3>
+                <div class="analytics-cards" id="analytics-cards">
+                    <div class="analytics-card">
+                        <span class="analytics-value" id="stat-visitors-today">0</span>
+                        <span class="analytics-label">زوار اليوم</span>
+                    </div>
+                    <div class="analytics-card">
+                        <span class="analytics-value" id="stat-visitors-total">0</span>
+                        <span class="analytics-label">إجمالي الزوار</span>
+                    </div>
+                    <div class="analytics-card alert" id="quotes-alert-card">
+                        <span class="analytics-value" id="stat-pending-quotes">0</span>
+                        <span class="analytics-label">طلبات معلقة</span>
+                        <a href="#" class="analytics-link" data-goto="leads">عرض →</a>
+                    </div>
+                    <div class="analytics-card">
+                        <span class="analytics-value" id="stat-services">0</span>
+                        <span class="analytics-label">الخدمات المنشورة</span>
+                    </div>
+                    <div class="analytics-card">
+                        <span class="analytics-value" id="stat-projects">0</span>
+                        <span class="analytics-label">المشاريع</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Leads Section -->
+            <section id="section-leads" class="admin-section hidden">
+                <h3>قاعدة بيانات العملاء (طلبات عرض الأسعار)</h3>
+                <p class="section-desc">الأشخاص الذين تواصلوا عبر نموذج "احصل على عرض أسعار"</p>
+                <div class="leads-filters">
+                    <button class="filter-btn active" data-status="">الكل</button>
+                    <button class="filter-btn" data-status="pending">معلق</button>
+                    <button class="filter-btn" data-status="answered">تم الرد</button>
+                </div>
+                <div class="leads-table-wrap">
+                    <table class="leads-table" id="leads-table">
+                        <thead><tr><th>الاسم</th><th>نوع الخدمة</th><th>الهاتف</th><th>الحالة</th><th>التاريخ</th><th>إجراء</th></tr></thead>
+                        <tbody id="leads-tbody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Services CMS Section -->
+            <section id="section-services" class="admin-section hidden">
+                <h3>تعديل الخدمات</h3>
+                <p class="section-desc">إضافة أو تعديل الخدمات والأسعار المعروضة</p>
+                <div id="services-editor"></div>
+                <button class="btn-add" id="add-service-btn">+ إضافة خدمة</button>
+                <button class="btn-save" data-save="services">حفظ الخدمات</button>
+            </section>
+
+            <!-- Portfolio Section -->
+            <section id="section-portfolio" class="admin-section hidden">
+                <h3>معرض الأعمال (Portfolio)</h3>
+                <p class="section-desc">رفع صور المشاريع (قبل وبعد التركيب) من جهازك أو رابط</p>
+                <div id="portfolio-editor"></div>
+                <button class="btn-add" id="add-portfolio-btn">+ إضافة صورة</button>
+                <button class="btn-save" data-save="portfolio">حفظ المعرض</button>
+            </section>
+
+            <!-- Blog Section -->
+            <section id="section-blog" class="admin-section hidden">
+                <h3>المدونة التقنية</h3>
+                <p class="section-desc">كتابة نصائح تقنية لجذب الزوار</p>
+                <div id="blog-editor"></div>
+                <button class="btn-add" id="add-blog-btn">+ إضافة مقال</button>
+                <button class="btn-save" data-save="blog">حفظ المقالات</button>
+            </section>
+
+            <!-- Technical Settings Section -->
+            <section id="section-settings" class="admin-section hidden">
+                <h3>الإعدادات التقنية</h3>
+                <div class="settings-grid">
+                    <div class="settings-block">
+                        <h4>إدارة واتساب</h4>
+                        <label>رقم الواتساب (بدون +)</label>
+                        <input type="text" id="setting-whatsapp" placeholder="22247774141">
+                    </div>
+                    <div class="settings-block">
+                        <h4>الشعار (Logo)</h4>
+                        <label>رابط صورة الشعار</label>
+                        <input type="text" id="setting-logo" placeholder="assets/logo.png">
+                    </div>
+                    <div class="settings-block">
+                        <h4>الألوان</h4>
+                        <label>اللون الذهبي الرئيسي</label>
+                        <input type="color" id="setting-color-gold" value="#d4af37">
+                        <input type="text" id="setting-color-gold-hex" value="#d4af37">
+                    </div>
+                    <div class="settings-block">
+                        <h4>تحسين محركات البحث (SEO)</h4>
+                        <label>الكلمات المفتاحية (مفصولة بفاصلة)</label>
+                        <input type="text" id="setting-seo-keywords" placeholder="تركيب كاميرات، تقوية واي فاي، ...">
+                        <label>الوصف التعريفي</label>
+                        <textarea id="setting-seo-desc" rows="3" placeholder="وصف الموقع"></textarea>
+                    </div>
+                </div>
+                <button class="btn-save" data-save="settings">حفظ الإعدادات</button>
+            </section>
+
             <!-- Media Section -->
-            <section id="section-media" class="admin-section">
+            <section id="section-media" class="admin-section hidden">
                 <h3>تغيير الصور والفيديو</h3>
                 <p class="section-desc">قم بتحميل الصور من جهازك (سطح المكتب أو المجلدات). الصور تُخزّن محلياً.</p>
                 <div class="media-grid media-upload-grid">
@@ -116,7 +243,7 @@
             </section>
 
             <!-- Features Section -->
-            <section id="section-features" class="admin-section hidden">
+            <section id="section-features" class="admin-section hidden" data-section="features">
                 <h3>البطاقات المميزة (الصفحة الرئيسية)</h3>
                 <p class="section-desc">حمّل صوراً أو فيديوهات من جهازك لكل بطاقة. الصور: اختر من المكتب. الفيديو: حمّل ملف أو أدخل رابط.</p>
                 <div id="features-editor">

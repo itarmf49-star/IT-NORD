@@ -94,6 +94,7 @@ def init_db():
             name TEXT NOT NULL,
             service_type TEXT NOT NULL,
             phone TEXT NOT NULL,
+            status TEXT DEFAULT 'pending',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
 
@@ -116,10 +117,56 @@ def init_db():
             title_en TEXT,
             sort_order INTEGER DEFAULT 0
         );
+
+        CREATE TABLE IF NOT EXISTS visitors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visit_date DATE NOT NULL,
+            count INTEGER DEFAULT 1,
+            UNIQUE(visit_date)
+        );
+
+        CREATE TABLE IF NOT EXISTS services (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title_ar TEXT NOT NULL,
+            title_en TEXT,
+            description_ar TEXT,
+            description_en TEXT,
+            price_ar TEXT,
+            price_en TEXT,
+            sort_order INTEGER DEFAULT 0
+        );
+
+        CREATE TABLE IF NOT EXISTS portfolio (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            image_url TEXT NOT NULL,
+            label_ar TEXT,
+            label_en TEXT,
+            type TEXT DEFAULT 'after',
+            sort_order INTEGER DEFAULT 0
+        );
+
+        CREATE TABLE IF NOT EXISTS blog_posts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title_ar TEXT NOT NULL,
+            title_en TEXT,
+            content_ar TEXT,
+            content_en TEXT,
+            slug TEXT UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS site_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT
+        );
     ''')
 
     try:
         c.execute("ALTER TABLE projects ADD COLUMN gallery_images TEXT")
+    except sqlite3.OperationalError:
+        pass
+    try:
+        c.execute("ALTER TABLE quotes ADD COLUMN status TEXT DEFAULT 'pending'")
     except sqlite3.OperationalError:
         pass
 
@@ -597,6 +644,233 @@ def get_hero_slides():
     rows = conn.execute("SELECT id, image_url, title_ar, title_en, sort_order FROM hero_slides ORDER BY sort_order, id").fetchall()
     conn.close()
     return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/analytics', methods=['GET'])
+def get_analytics():
+    conn = get_db()
+    from datetime import date
+    today = date.today().isoformat()
+    v = conn.execute("SELECT count FROM visitors WHERE visit_date = ?", (today,)).fetchone()
+    visitors_today = v[0] if v else 0
+    visitors_total = conn.execute("SELECT COALESCE(SUM(count), 0) FROM visitors").fetchone()[0]
+    pending_quotes = conn.execute("SELECT COUNT(*) FROM quotes WHERE status = 'pending'").fetchone()[0]
+    services_count = conn.execute("SELECT COUNT(*) FROM services").fetchone()[0]
+    projects_count = conn.execute("SELECT COUNT(*) FROM projects").fetchone()[0]
+    conn.close()
+    return jsonify({
+        'visitors_today': visitors_today,
+        'visitors_total': int(visitors_total),
+        'pending_quotes': pending_quotes,
+        'services_count': services_count,
+        'projects_count': projects_count
+    })
+
+
+@app.route('/api/visitors', methods=['POST'])
+def track_visitor():
+    from datetime import date
+    today = date.today().isoformat()
+    conn = get_db()
+    cur = conn.execute("UPDATE visitors SET count = count + 1 WHERE visit_date = ?", (today,))
+    if cur.rowcount == 0:
+        conn.execute("INSERT INTO visitors (visit_date, count) VALUES (?, 1)", (today,))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/quotes', methods=['GET'])
+def list_quotes():
+    status = request.args.get('status')
+    conn = get_db()
+    q = "SELECT id, name, service_type, phone, status, created_at FROM quotes"
+    params = []
+    if status:
+        q += " WHERE status = ?"
+        params.append(status)
+    q += " ORDER BY created_at DESC"
+    rows = conn.execute(q, params).fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/quotes/<int:qid>', methods=['PATCH'])
+def update_quote_status(qid):
+    data = request.json or {}
+    status = data.get('status', 'pending')
+    conn = get_db()
+    conn.execute("UPDATE quotes SET status = ? WHERE id = ?", (status, qid))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/services', methods=['GET'])
+def list_services():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM services ORDER BY sort_order, id").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/services', methods=['POST'])
+def create_service():
+    data = request.json or {}
+    conn = get_db()
+    conn.execute(
+        """INSERT INTO services (title_ar, title_en, description_ar, description_en, price_ar, price_en, sort_order)
+           VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (data.get('title_ar', ''), data.get('title_en', ''), data.get('description_ar', ''),
+         data.get('description_en', ''), data.get('price_ar', ''), data.get('price_en', ''), data.get('sort_order', 0))
+    )
+    sid = conn.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True, 'id': sid})
+
+
+@app.route('/api/services/<int:sid>', methods=['PUT'])
+def update_service(sid):
+    data = request.json or {}
+    conn = get_db()
+    conn.execute(
+        """UPDATE services SET title_ar=?, title_en=?, description_ar=?, description_en=?, price_ar=?, price_en=?, sort_order=? WHERE id=?""",
+        (data.get('title_ar', ''), data.get('title_en', ''), data.get('description_ar', ''),
+         data.get('description_en', ''), data.get('price_ar', ''), data.get('price_en', ''), data.get('sort_order', 0), sid)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/services/<int:sid>', methods=['DELETE'])
+def delete_service(sid):
+    conn = get_db()
+    conn.execute("DELETE FROM services WHERE id = ?", (sid,))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/portfolio', methods=['GET'])
+def list_portfolio():
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM portfolio ORDER BY sort_order, id").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/portfolio', methods=['POST'])
+def create_portfolio_item():
+    data = request.json or {}
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO portfolio (image_url, label_ar, label_en, type, sort_order) VALUES (?, ?, ?, ?, ?)",
+        (data.get('image_url', ''), data.get('label_ar', ''), data.get('label_en', ''),
+         data.get('type', 'after'), data.get('sort_order', 0))
+    )
+    pid = conn.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True, 'id': pid})
+
+
+@app.route('/api/portfolio/<int:pid>', methods=['PUT'])
+def update_portfolio_item(pid):
+    data = request.json or {}
+    conn = get_db()
+    conn.execute(
+        "UPDATE portfolio SET image_url=?, label_ar=?, label_en=?, type=?, sort_order=? WHERE id=?",
+        (data.get('image_url', ''), data.get('label_ar', ''), data.get('label_en', ''),
+         data.get('type', 'after'), data.get('sort_order', 0), pid)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/portfolio/<int:pid>', methods=['DELETE'])
+def delete_portfolio_item(pid):
+    conn = get_db()
+    conn.execute("DELETE FROM portfolio WHERE id = ?", (pid,))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/blog', methods=['GET'])
+def list_blog_posts():
+    conn = get_db()
+    rows = conn.execute("SELECT id, title_ar, title_en, slug, created_at FROM blog_posts ORDER BY created_at DESC").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/blog', methods=['POST'])
+def create_blog_post():
+    data = request.json or {}
+    slug = data.get('slug') or (data.get('title_ar', '')[:50].replace(' ', '-') if data.get('title_ar') else '')
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO blog_posts (title_ar, title_en, content_ar, content_en, slug) VALUES (?, ?, ?, ?, ?)",
+        (data.get('title_ar', ''), data.get('title_en', ''), data.get('content_ar', ''), data.get('content_en', ''), slug)
+    )
+    bid = conn.lastrowid
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True, 'id': bid})
+
+
+@app.route('/api/blog/<int:bid>', methods=['GET'])
+def get_blog_post(bid):
+    conn = get_db()
+    row = conn.execute("SELECT * FROM blog_posts WHERE id = ?", (bid,)).fetchone()
+    conn.close()
+    if not row:
+        return jsonify({'error': 'Not found'}), 404
+    return jsonify(dict(row))
+
+
+@app.route('/api/blog/<int:bid>', methods=['PUT'])
+def update_blog_post(bid):
+    data = request.json or {}
+    conn = get_db()
+    conn.execute(
+        "UPDATE blog_posts SET title_ar=?, title_en=?, content_ar=?, content_en=?, slug=? WHERE id=?",
+        (data.get('title_ar', ''), data.get('title_en', ''), data.get('content_ar', ''), data.get('content_en', ''), data.get('slug', ''), bid)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/blog/<int:bid>', methods=['DELETE'])
+def delete_blog_post(bid):
+    conn = get_db()
+    conn.execute("DELETE FROM blog_posts WHERE id = ?", (bid,))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
+
+
+@app.route('/api/site-settings', methods=['GET'])
+def get_site_settings():
+    conn = get_db()
+    rows = conn.execute("SELECT key, value FROM site_settings").fetchall()
+    conn.close()
+    return jsonify(dict(rows))
+
+
+@app.route('/api/site-settings', methods=['POST'])
+def save_site_settings():
+    data = request.json or {}
+    conn = get_db()
+    for k, v in data.items():
+        conn.execute("INSERT OR REPLACE INTO site_settings (key, value) VALUES (?, ?)", (k, str(v)))
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True})
 
 
 @app.route('/api/testimonials', methods=['GET'])

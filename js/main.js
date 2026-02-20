@@ -251,6 +251,7 @@ const CALC_ESTIMATES = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (API) fetch(API + '/visitors', { method: 'POST' }).catch(() => {});
     initLanguage();
     initOurWorkLinks();
     initHeroSlider();
