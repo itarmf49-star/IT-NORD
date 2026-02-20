@@ -4,9 +4,14 @@
  */
 
 const API = (typeof window !== 'undefined' && window.location.origin) ? window.location.origin + '/api' : '/api';
+const AUTH_KEY = 'itnord_admin_logged_in';
 
 document.addEventListener('DOMContentLoaded', () => {
-    showDashboard();
+    if (sessionStorage.getItem(AUTH_KEY)) {
+        showDashboard();
+    } else {
+        initLogin();
+    }
     initSections();
     initSaveHandlers();
     loadAnalytics();
@@ -18,13 +23,61 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(loadAnalytics, 60000);
 });
 
-function showDashboard() {
+function initLogin() {
+    const loginScreen = document.getElementById('login-screen');
     const dashboard = document.getElementById('admin-dashboard');
+    if (loginScreen) loginScreen.classList.remove('hidden');
+    if (dashboard) dashboard.classList.add('hidden');
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email')?.value?.trim() || '';
+        const password = document.getElementById('login-password')?.value || '';
+        const errEl = document.getElementById('login-error');
+        const btn = document.getElementById('login-btn');
+        if (errEl) errEl.textContent = '';
+        if (btn) btn.disabled = true;
+        try {
+            const r = await fetch(API + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const j = await r.json().catch(() => ({}));
+            if (r.ok && j.ok) {
+                sessionStorage.setItem(AUTH_KEY, '1');
+                if (loginScreen) loginScreen.classList.add('hidden');
+                if (dashboard) dashboard.classList.remove('hidden');
+                showDashboard();
+            } else {
+                if (errEl) errEl.textContent = j.error || 'فشل تسجيل الدخول';
+            }
+        } catch (e) {
+            if (errEl) errEl.textContent = 'تحقق من تشغيل الخادم';
+        }
+        if (btn) btn.disabled = false;
+    });
+}
+
+function showDashboard() {
+    const loginScreen = document.getElementById('login-screen');
+    const dashboard = document.getElementById('admin-dashboard');
+    if (loginScreen) loginScreen.classList.add('hidden');
     if (dashboard) dashboard.classList.remove('hidden');
     loadEditorData();
+    loadAnalytics();
+    loadLeads();
+    loadServicesEditor();
+    loadPortfolioEditor();
+    loadBlogEditor();
+    loadSiteSettings();
 }
 
 function initSections() {
+    document.getElementById('logout-btn')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        sessionStorage.removeItem(AUTH_KEY);
+        location.reload();
+    });
     document.querySelectorAll('.nav-item[data-section]').forEach(item => {
         item.addEventListener('click', (e) => {
             if (item.getAttribute('href') === '#') e.preventDefault();

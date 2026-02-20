@@ -24,8 +24,9 @@ else:
 def get_db():
     """Get SQLite connection"""
     Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")  # Reduces "database is locked" errors
     return conn
 
 
@@ -399,6 +400,21 @@ def init_db():
     conn.close()
 
 
+# --- API: Auth ---
+ADMIN_EMAIL = 'ITNORD@outlook.fr'
+ADMIN_PASSWORD = 'ITNORD@2026'
+
+
+@app.route('/api/auth/login', methods=['POST'])
+def auth_login():
+    data = request.json or {}
+    email = (data.get('email') or '').strip()
+    password = data.get('password') or ''
+    if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+        return jsonify({'ok': True})
+    return jsonify({'ok': False, 'error': 'البريد أو كلمة المرور غير صحيحة'}), 401
+
+
 # --- API: Settings & Media ---
 
 @app.route('/api/settings', methods=['GET'])
@@ -718,13 +734,13 @@ def list_services():
 def create_service():
     data = request.json or {}
     conn = get_db()
-    conn.execute(
+    c = conn.execute(
         """INSERT INTO services (title_ar, title_en, description_ar, description_en, price_ar, price_en, sort_order)
            VALUES (?, ?, ?, ?, ?, ?, ?)""",
         (data.get('title_ar', ''), data.get('title_en', ''), data.get('description_ar', ''),
          data.get('description_en', ''), data.get('price_ar', ''), data.get('price_en', ''), data.get('sort_order', 0))
     )
-    sid = conn.lastrowid
+    sid = c.lastrowid
     conn.commit()
     conn.close()
     return jsonify({'ok': True, 'id': sid})
@@ -765,12 +781,12 @@ def list_portfolio():
 def create_portfolio_item():
     data = request.json or {}
     conn = get_db()
-    conn.execute(
+    c = conn.execute(
         "INSERT INTO portfolio (image_url, label_ar, label_en, type, sort_order) VALUES (?, ?, ?, ?, ?)",
         (data.get('image_url', ''), data.get('label_ar', ''), data.get('label_en', ''),
          data.get('type', 'after'), data.get('sort_order', 0))
     )
-    pid = conn.lastrowid
+    pid = c.lastrowid
     conn.commit()
     conn.close()
     return jsonify({'ok': True, 'id': pid})
@@ -812,11 +828,11 @@ def create_blog_post():
     data = request.json or {}
     slug = data.get('slug') or (data.get('title_ar', '')[:50].replace(' ', '-') if data.get('title_ar') else '')
     conn = get_db()
-    conn.execute(
+    c = conn.execute(
         "INSERT INTO blog_posts (title_ar, title_en, content_ar, content_en, slug) VALUES (?, ?, ?, ?, ?)",
         (data.get('title_ar', ''), data.get('title_en', ''), data.get('content_ar', ''), data.get('content_en', ''), slug)
     )
-    bid = conn.lastrowid
+    bid = c.lastrowid
     conn.commit()
     conn.close()
     return jsonify({'ok': True, 'id': bid})
