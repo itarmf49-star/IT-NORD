@@ -82,7 +82,37 @@ const TRANSLATIONS = {
         securityText: 'منزلك في أمان دائماً: راقب واطمئن أينما كنت.',
         // Contact
         whatsapp: 'واتساب',
-        email: 'البريد'
+        email: 'البريد',
+        // New sections
+        ourServices: 'خدماتنا التفصيلية',
+        serviceWifi: 'حلول الواي فاي والجسور اللاسلكية',
+        serviceWifiDesc: 'تغطية لاسلكية شاملة، هوائيات احترافية، جسور بعيدة المدى لربط المواقع.',
+        serviceMonitoring: 'أنظمة المراقبة الذكية',
+        serviceMonitoringDesc: 'تركيب كاميرات المراقبة عالية الدقة، مراقبة عن بُعد، حماية على مدار الساعة.',
+        serviceLightCurrent: 'حلول التيار الخفيف وأتمتة المباني',
+        serviceLightCurrentDesc: 'شبكات البيانات، أنظمة التحكم، تحويل المباني إلى مباني ذكية.',
+        portfolioTitle: 'معرض أعمالنا',
+        portfolioSubtitle: 'صور حقيقية لمشاريع IT NORD المنفذة — قبل وبعد التركيب',
+        before: 'قبل',
+        after: 'بعد',
+        getQuoteTitle: 'احصل على عرض أسعار',
+        getQuoteSubtitle: 'املأ النموذج وسنتواصل معك في أقرب وقت',
+        quoteName: 'الاسم الكامل',
+        quotePhone: 'رقم الهاتف',
+        selectService: 'اختر نوع الخدمة',
+        optCameras: 'تركيب كاميرات المراقبة',
+        optWifi: 'تقوية الواي فاي والهوائيات',
+        optNetworks: 'شبكات التيار الخفيف',
+        optSmartHome: 'حلول المنزل الذكي',
+        optOther: 'أخرى',
+        sendQuote: 'إرسال الطلب',
+        quoteSuccess: 'تم إرسال طلبك بنجاح! سنتواصل معك قريباً.',
+        quoteError: 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+        testimonialsTitle: 'آراء عملائنا',
+        calcTitle: 'حاسبة التقدير الأولي',
+        calcSubtitle: 'اختر عدد الغرف في منزلك للحصول على تقدير أولي لنوع الشبكة المطلوبة',
+        calcRooms: 'عدد الغرف',
+        techBlog: 'المدونة التقنية'
     },
     en: {
         ourWork: 'Our Work',
@@ -159,22 +189,177 @@ const TRANSLATIONS = {
         securityText: 'Your home is always secure: Monitor and rest assured wherever you are.',
         // Contact
         whatsapp: 'WhatsApp',
-        email: 'Email'
+        email: 'Email',
+        // New sections
+        ourServices: 'Our Detailed Services',
+        serviceWifi: 'Wi-Fi and Wireless Bridges Solutions',
+        serviceWifiDesc: 'Full wireless coverage, professional antennas, long-range bridges to connect sites.',
+        serviceMonitoring: 'Intelligent Monitoring Systems',
+        serviceMonitoringDesc: 'HD surveillance camera installation, remote monitoring, 24/7 protection.',
+        serviceLightCurrent: 'Light Current and Building Automation',
+        serviceLightCurrentDesc: 'Data networks, control systems, transforming buildings into smart buildings.',
+        portfolioTitle: 'Our Work Gallery',
+        portfolioSubtitle: 'Real photos of IT NORD projects — before and after installation',
+        before: 'Before',
+        after: 'After',
+        getQuoteTitle: 'Get a Quote',
+        getQuoteSubtitle: 'Fill out the form and we will contact you shortly',
+        quoteName: 'Full Name',
+        quotePhone: 'Phone Number',
+        selectService: 'Select service type',
+        optCameras: 'Surveillance cameras installation',
+        optWifi: 'Wi-Fi strengthening and antennas',
+        optNetworks: 'Light current networks',
+        optSmartHome: 'Smart home solutions',
+        optOther: 'Other',
+        sendQuote: 'Submit Request',
+        quoteSuccess: 'Your request has been sent! We will contact you soon.',
+        quoteError: 'An error occurred. Please try again.',
+        testimonialsTitle: 'Customer Testimonials',
+        calcTitle: 'Preliminary Estimate Calculator',
+        calcSubtitle: 'Choose the number of rooms in your home for a preliminary network estimate',
+        calcRooms: 'Number of rooms',
+        techBlog: 'Tech Blog'
+    }
+};
+
+const CALC_ESTIMATES = {
+    ar: {
+        1: 'شقة صغيرة: نقطة وصول واحدة (AP) تكفي.',
+        2: 'شقة متوسطة: نقطتا وصول (AP) لتغطية كاملة.',
+        3: 'منزل صغير: 2-3 نقاط وصول مع راوتر رئيسي.',
+        4: 'منزل متوسط: 3-4 نقاط وصول + كابلات شبكة.',
+        5: 'منزل كبير: 4-5 نقاط + شبكة هيكلية.',
+        6: 'فيلا: 5-6 نقاط + شبكة ألياف.',
+        7: 'منزل واسع: شبكة احترافية مع توزيع ذكي.',
+        8: 'مبنى صغير: شبكة enterprise مع عدة طبقات.',
+        9: 'مبنى متوسط: شبكة متكاملة + إدارة مركزية.',
+        10: 'مبنى كبير: حلول enterprise كاملة.'
+    },
+    en: {
+        1: 'Small apartment: One access point (AP) is enough.',
+        2: 'Medium apartment: Two APs for full coverage.',
+        3: 'Small house: 2-3 APs with main router.',
+        4: 'Medium house: 3-4 APs + network cables.',
+        5: 'Large house: 4-5 APs + structured cabling.',
+        6: 'Villa: 5-6 APs + fiber network.',
+        7: 'Spacious home: Professional network with smart distribution.',
+        8: 'Small building: Enterprise network with multiple floors.',
+        9: 'Medium building: Integrated network + central management.',
+        10: 'Large building: Full enterprise solutions.'
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     initLanguage();
     initOurWorkLinks();
+    initHeroSlider();
     loadFeatures();
     loadTools();
     loadMediaOverrides();
     loadProjects();
+    loadTestimonials();
+    initQuoteForm();
+    initCalculator();
     initOurWorkDropdown();
     initContactButton();
     initChat();
     initDimCarousel();
 });
+
+function initHeroSlider() {
+    const track = document.getElementById('hero-slider-track');
+    const dots = document.getElementById('hero-slider-dots');
+    if (!track || !dots) return;
+    const slides = track.querySelectorAll('.hero-slide');
+    if (slides.length === 0) return;
+    let idx = 0;
+    const INTERVAL = 6000;
+    slides.forEach((s, i) => {
+        const d = document.createElement('span');
+        d.className = 'hero-dot' + (i === 0 ? ' active' : '');
+        d.setAttribute('aria-label', 'Slide ' + (i + 1));
+        d.onclick = () => go(idx = i);
+        dots.appendChild(d);
+    });
+    const dotEls = dots.querySelectorAll('.hero-dot');
+    function go(i) {
+        idx = (i + slides.length) % slides.length;
+        slides.forEach((s, j) => s.classList.toggle('active', j === idx));
+        dotEls.forEach((d, j) => d.classList.toggle('active', j === idx));
+    }
+    let t = setInterval(() => go(idx + 1), INTERVAL);
+    document.addEventListener('visibilitychange', () => {
+        clearInterval(t);
+        if (!document.hidden) t = setInterval(() => go(idx + 1), INTERVAL);
+    });
+}
+
+function loadTestimonials() {
+    const grid = document.getElementById('testimonials-grid');
+    if (!grid) return;
+    const lang = getCurrentLang();
+    const fallback = [
+        { name_ar: 'أحمد محمد', name_en: 'Ahmed Mohamed', text_ar: 'خدمة ممتازة وتركيب احترافي.', text_en: 'Excellent service and professional installation.', role_ar: 'عميل', role_en: 'Client' },
+    ];
+    if (API) {
+        fetch(API + '/testimonials').then(r => r.ok ? r.json() : fallback).then(data => {
+            const list = (data && data.length) ? data : fallback;
+            grid.innerHTML = list.map(t => {
+                const n = lang === 'ar' ? (t.name_ar || t.name_en) : (t.name_en || t.name_ar);
+                const txt = lang === 'ar' ? (t.text_ar || t.text_en) : (t.text_en || t.text_ar);
+                const r = lang === 'ar' ? (t.role_ar || t.role_en) : (t.role_en || t.role_ar);
+                return `<div class="testimonial-card"><p>${txt}</p><span class="testimonial-name">${n}</span><span class="testimonial-role">${r}</span></div>`;
+            }).join('');
+        }).catch(() => { grid.innerHTML = fallback.map(t => `<div class="testimonial-card"><p>${t.text_ar}</p><span class="testimonial-name">${t.name_ar}</span></div>`).join(''); });
+    } else {
+        grid.innerHTML = fallback.map(t => `<div class="testimonial-card"><p>${t.text_ar}</p><span class="testimonial-name">${t.name_ar}</span></div>`).join('');
+    }
+}
+
+function initQuoteForm() {
+    const form = document.getElementById('quote-form');
+    const msg = document.getElementById('quote-message');
+    if (!form || !msg) return;
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const data = { name: fd.get('name'), service_type: fd.get('service_type'), phone: fd.get('phone') };
+        msg.classList.add('hidden');
+        if (!API) {
+            msg.textContent = getCurrentLang() === 'ar' ? 'سيتم إرسال الطلب عند الاتصال بالسيرفر.' : 'Request will be sent when connected to server.';
+            msg.classList.remove('hidden');
+            return;
+        }
+        try {
+            const r = await fetch(API + '/quotes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            const j = await r.json();
+            const t = TRANSLATIONS[getCurrentLang()];
+            msg.textContent = j.ok ? (t.quoteSuccess || 'تم إرسال طلبك بنجاح!') : (t.quoteError || 'حدث خطأ.');
+            msg.classList.remove('hidden');
+            if (j.ok) form.reset();
+        } catch {
+            msg.textContent = TRANSLATIONS[getCurrentLang()].quoteError;
+            msg.classList.remove('hidden');
+        }
+    });
+}
+
+function initCalculator() {
+    const input = document.getElementById('calc-rooms');
+    const valueSpan = document.getElementById('calc-value');
+    const result = document.getElementById('calc-result');
+    if (!input || !valueSpan || !result) return;
+    const update = () => {
+        const v = parseInt(input.value, 10);
+        valueSpan.textContent = v;
+        const lang = getCurrentLang();
+        const est = CALC_ESTIMATES[lang] || CALC_ESTIMATES.ar;
+        result.textContent = est[v] || est[Math.min(v, 10)];
+    };
+    input.addEventListener('input', update);
+    update();
+}
 
 function initDimCarousel() {
     const track = document.getElementById('dim-carousel-track');
@@ -256,6 +441,11 @@ function applyTranslations(lang) {
         const key = el.getAttribute('data-i18n');
         if (t[key]) el.textContent = t[key];
     });
+    if (document.getElementById('calc-result') && document.getElementById('calc-rooms')) {
+        const v = parseInt(document.getElementById('calc-rooms').value, 10);
+        const est = CALC_ESTIMATES[lang] || CALC_ESTIMATES.ar;
+        document.getElementById('calc-result').textContent = est[v] || est[Math.min(v, 10)];
+    }
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (t[key]) el.placeholder = t[key];

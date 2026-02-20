@@ -88,6 +88,34 @@ def init_db():
             key TEXT PRIMARY KEY,
             value TEXT
         );
+
+        CREATE TABLE IF NOT EXISTS quotes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            service_type TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS testimonials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name_ar TEXT,
+            name_en TEXT,
+            text_ar TEXT,
+            text_en TEXT,
+            role_ar TEXT,
+            role_en TEXT,
+            sort_order INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS hero_slides (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            image_url TEXT NOT NULL,
+            title_ar TEXT,
+            title_en TEXT,
+            sort_order INTEGER DEFAULT 0
+        );
     ''')
 
     try:
@@ -290,6 +318,25 @@ def init_db():
         for i, (icon, label) in enumerate([('📶', 'شبكات الإنترنت'), ('📡', 'هوائيات محسنة'), ('🔒', 'أنظمة الأمان'), ('🏠', 'المباني الذكية')]):
             c.execute("INSERT INTO tools (sort_order, icon, label) VALUES (?, ?, ?)", (i, icon, label))
 
+    # Seed hero slides (server rooms, cameras)
+    c.execute("SELECT COUNT(*) FROM hero_slides")
+    if c.fetchone()[0] == 0:
+        slides = [
+            ('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200', 'غرفة سيرفرات احترافية', 'Professional Server Room'),
+            ('https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200', 'كاميرات مراقبة عالية الدقة', 'High-Definition Surveillance'),
+            ('https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200', 'بنية تحتية رقمية متكاملة', 'Integrated Digital Infrastructure'),
+        ]
+        for i, (url, t_ar, t_en) in enumerate(slides):
+            c.execute("INSERT INTO hero_slides (image_url, title_ar, title_en, sort_order) VALUES (?, ?, ?, ?)", (url, t_ar, t_en, i))
+    # Seed testimonials
+    c.execute("SELECT COUNT(*) FROM testimonials")
+    if c.fetchone()[0] == 0:
+        test = [
+            ('أحمد محمد', 'Ahmed Mohamed', 'خدمة ممتازة وتركيب احترافي. أوصي بـ IT NORD لجميع حلول الأمان والكاميرات.', 'Excellent service and professional installation. I recommend IT NORD for all security and camera solutions.', 'عميل - نواذيبو', 'Client - Nouadhibou'),
+            ('سارة الدخيل', 'Sara Aldakhil', 'تحسين كبير في تغطية الواي فاي بعد تركيب الهوائيات. فريق محترف.', 'Great improvement in Wi-Fi coverage after antenna installation. Professional team.', 'عميلة - نواكشوط', 'Client - Nouakchott'),
+        ]
+        for i, (n_ar, n_en, txt_ar, txt_en, r_ar, r_en) in enumerate(test):
+            c.execute("INSERT INTO testimonials (name_ar, name_en, text_ar, text_en, role_ar, role_en, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)", (n_ar, n_en, txt_ar, txt_en, r_ar, r_en, i))
     # Seed default comm buttons
     c.execute("SELECT COUNT(*) FROM comm_buttons")
     if c.fetchone()[0] == 0:
@@ -524,6 +571,42 @@ def delete_project(pid):
     return jsonify({'ok': True})
 
 
+# --- API: Quotes ---
+
+@app.route('/api/quotes', methods=['POST'])
+def submit_quote():
+    data = request.json or request.form or {}
+    name = data.get('name') or ''
+    service_type = data.get('service_type') or ''
+    phone = data.get('phone') or ''
+    if not name or not service_type or not phone:
+        return jsonify({'ok': False, 'error': 'Missing fields'}), 400
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO quotes (name, service_type, phone) VALUES (?, ?, ?)",
+        (name.strip(), service_type.strip(), phone.strip())
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({'ok': True, 'message': 'Quote received'})
+
+
+@app.route('/api/hero-slides', methods=['GET'])
+def get_hero_slides():
+    conn = get_db()
+    rows = conn.execute("SELECT id, image_url, title_ar, title_en, sort_order FROM hero_slides ORDER BY sort_order, id").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
+@app.route('/api/testimonials', methods=['GET'])
+def get_testimonials():
+    conn = get_db()
+    rows = conn.execute("SELECT id, name_ar, name_en, text_ar, text_en, role_ar, role_en, sort_order FROM testimonials ORDER BY sort_order, id").fetchall()
+    conn.close()
+    return jsonify([dict(r) for r in rows])
+
+
 # --- Static files & HTML ---
 
 @app.route('/')
@@ -535,6 +618,12 @@ def index():
 @app.route('/admin/')
 def admin():
     return send_from_directory('.', 'admin.html')
+
+
+@app.route('/blog')
+@app.route('/blog.html')
+def blog():
+    return send_from_directory('.', 'blog.html')
 
 
 @app.route('/project/<int:pid>')

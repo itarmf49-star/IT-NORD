@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT NORD | For Technical Solutions</title>
+    <meta name="description" content="IT NORD موريتانيا - تركيب كاميرات المراقبة، تقوية الواي فاي، شبكات التيار الخفيف، حلول المنزل الذكي. In the artistic world we make the impossible.">
+    <meta name="keywords" content="تركيب كاميرات المراقبة، تقوية الواي فاي، شبكات التيار الخفيف، حلول المنزل الذكي موريتانيا، Smart Home Solutions Mauritania، Installing surveillance cameras، Strengthening Wi-Fi، Light current networks">
+    <meta name="robots" content="index, follow">
+    <title>IT NORD | تركيب كاميرات المراقبة | تقوية الواي فاي | حلول المنزل الذكي - موريتانيا</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
 <body>
     <!-- Header -->
@@ -27,8 +32,12 @@
                         <a href="project.html?id=10" class="dropdown-item our-work-link" data-project="10" data-i18n="smartBuildings">المباني الذكية</a>
                         <a href="project.html?id=11" class="dropdown-item our-work-link" data-project="11" data-i18n="integratedSolutions">الحلول المتكاملة</a>
                         <a href="project.html?id=12" class="dropdown-item our-work-link" data-project="12" data-i18n="digitalImagination">الخيال الرقمي</a>
+                        <a href="#portfolio-section" class="dropdown-item" data-i18n="portfolioTitle">معرض أعمالنا</a>
+                        <a href="#quote-section" class="dropdown-item" data-i18n="getQuoteTitle">احصل على عرض أسعار</a>
+                        <a href="#testimonials-section" class="dropdown-item" data-i18n="testimonialsTitle">آراء عملائنا</a>
                         <a href="#projects-section" class="dropdown-item" data-i18n="ourProjects">مشاريعنا التعليمية</a>
                         <a href="#tools-section" class="dropdown-item" data-i18n="ourTools">أدواتنا وتقنياتنا</a>
+                        <a href="blog.html" class="dropdown-item" data-i18n="techBlog">المدونة التقنية</a>
                     </div>
                 </div>
                 <a href="/" class="nav-link active" data-i18n="homePage">الصفحة الرئيسية</a>
@@ -67,9 +76,24 @@
         </nav>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero" id="hero-section">
-        <div class="hero-content">
+    <!-- Hero Slider -->
+    <section class="hero hero-slider" id="hero-section">
+        <div class="hero-slider-track" id="hero-slider-track">
+            <!-- Slides populated by JS or fallback -->
+            <div class="hero-slide active" data-slide="0">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200" alt="غرفة سيرفرات" loading="eager">
+                <div class="hero-slide-overlay"></div>
+            </div>
+            <div class="hero-slide" data-slide="1">
+                <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=1200" alt="كاميرات مراقبة" loading="lazy">
+                <div class="hero-slide-overlay"></div>
+            </div>
+            <div class="hero-slide" data-slide="2">
+                <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=1200" alt="بنية تحتية رقمية" loading="lazy">
+                <div class="hero-slide-overlay"></div>
+            </div>
+        </div>
+        <div class="hero-content hero-overlay-content">
             <div class="logo-hero">
                 <div class="circuit-board">
                     <span class="circuit-it">IT</span>
@@ -79,9 +103,10 @@
                     <p class="tagline">FOR TECHNICAL SOLUTIONS</p>
                 </div>
             </div>
-            <p class="hero-slogan en">In the artistic world we make the impossible ?</p>
-            <p class="hero-slogan ar">في العالم الفني نصنع المستحيل ؟</p>
+            <p class="hero-slogan en">In the artistic world we make the impossible</p>
+            <p class="hero-slogan ar">في العالم الفني نصنع المستحيل</p>
         </div>
+        <div class="hero-slider-dots" id="hero-slider-dots"></div>
     </section>
 
     <!-- Featured Sections (Dynamic from Admin) -->
@@ -106,40 +131,36 @@
         </div>
     </section>
 
-    <!-- Services Content -->
-    <section class="services-content" id="network-section">
-        <div class="service-block">
-            <div class="service-image-wrap">
-                <img src="assets/4-access-control.png" alt="توزيع الشبكة" id="network-img">
+    <!-- Detailed Services Section -->
+    <section class="services-detailed" id="services-section">
+        <h2 class="section-title" data-i18n="ourServices">خدماتنا التفصيلية</h2>
+        <div class="service-cards">
+            <div class="service-card">
+                <div class="service-card-img">
+                    <img src="assets/8-antenna.png" alt="Wi-Fi و الجسور اللاسلكية" loading="lazy">
+                </div>
+                <div class="service-card-body">
+                    <h3 data-i18n="serviceWifi">حلول الواي فاي والجسور اللاسلكية</h3>
+                    <p data-i18n="serviceWifiDesc">تغطية لاسلكية شاملة، هوائيات احترافية، جسور بعيدة المدى لربط المواقع.</p>
+                </div>
             </div>
-            <div class="service-text">
-                <p><span data-i18n="serviceDistribute">خدمات توزيع تضمن وصول</span> <span class="highlight-btn" data-i18n="signalStrong">الإشارة بقوة</span>.</p>
+            <div class="service-card">
+                <div class="service-card-img">
+                    <img src="assets/1-ptz-camera.png" alt="أنظمة المراقبة الذكية" loading="lazy">
+                </div>
+                <div class="service-card-body">
+                    <h3 data-i18n="serviceMonitoring">أنظمة المراقبة الذكية</h3>
+                    <p data-i18n="serviceMonitoringDesc">تركيب كاميرات المراقبة عالية الدقة، مراقبة عن بعد، حماية على مدار الساعة.</p>
+                </div>
             </div>
-        </div>
-        <div class="service-block reverse">
-            <div class="service-image-wrap">
-                <img src="assets/5-iot-smart-home.png" alt="تغطية الواي فاي" id="wifi-img">
-            </div>
-            <div class="service-text">
-                <h3 data-i18n="wifiCoverageTitle">حوّل منزلك إلى منطقة تغطية كاملة</h3>
-                <p data-i18n="wifiCoverageDesc">شبكة منزلية بلا حدود: توزيع إنترنت يغطي كل احتياجات عائلتك المتصلة.</p>
-            </div>
-        </div>
-        <div class="service-block">
-            <div class="service-image-wrap">
-                <img src="assets/6-digital-interface.png" alt="غرف السيرفرات" id="server-img">
-            </div>
-            <div class="service-text">
-                <p data-i18n="digitalFoundation">من شبكات البيانات إلى أنظمة الأمان والتيار الخفيف، نحن نبني الأساس الرقمي.</p>
-            </div>
-        </div>
-        <div class="service-block reverse">
-            <div class="service-image-wrap">
-                <img src="assets/5-iot-smart-home.png" alt="المباني الذكية" id="smart-img">
-            </div>
-            <div class="service-text">
-                <h3 data-i18n="smartBuildingsTitle">المباني الذكية</h3>
-                <p data-i18n="smartBuildingsDesc">حلول التيار الخفيف والاتصالات للمباني الذكية: نوفر أساساً تكنولوجياً متيناً لمنشآتك.</p>
+            <div class="service-card">
+                <div class="service-card-img">
+                    <img src="assets/5-iot-smart-home.png" alt="التيار الخفيف وأتمتة المباني" loading="lazy">
+                </div>
+                <div class="service-card-body">
+                    <h3 data-i18n="serviceLightCurrent">حلول التيار الخفيف وأتمتة المباني</h3>
+                    <p data-i18n="serviceLightCurrentDesc">شبكات البيانات، أنظمة التحكم، تحويل المباني إلى مباني ذكية.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -279,6 +300,68 @@
         </div>
     </section>
 
+    <!-- Portfolio Gallery (Before/After) -->
+    <section class="portfolio-section" id="portfolio-section">
+        <h2 class="section-title" data-i18n="portfolioTitle">معرض أعمالنا</h2>
+        <p class="section-subtitle" data-i18n="portfolioSubtitle">صور حقيقية لمشاريع IT NORD المنفذة — قبل وبعد التركيب</p>
+        <div class="portfolio-grid" id="portfolio-grid">
+            <div class="portfolio-item before-after">
+                <div class="ba-label" data-i18n="before">قبل</div>
+                <img src="https://images.unsplash.com/photo-1557597774-9d273605dfa9?w=600" alt="قبل التركيب" loading="lazy">
+            </div>
+            <div class="portfolio-item before-after">
+                <div class="ba-label" data-i18n="after">بعد</div>
+                <img src="https://images.unsplash.com/photo-1558002038-10559092b84b?w=600" alt="بعد التركيب" loading="lazy">
+            </div>
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600" alt="غرفة سيرفرات" loading="lazy">
+            </div>
+            <div class="portfolio-item">
+                <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=600" alt="هوائيات" loading="lazy">
+            </div>
+        </div>
+    </section>
+
+    <!-- Get a Quote Form -->
+    <section class="quote-section" id="quote-section">
+        <h2 class="section-title" data-i18n="getQuoteTitle">احصل على عرض أسعار</h2>
+        <p class="section-subtitle" data-i18n="getQuoteSubtitle">املأ النموذج وسنتواصل معك في أقرب وقت</p>
+        <form class="quote-form" id="quote-form">
+            <input type="text" name="name" required data-i18n-placeholder="quoteName" placeholder="الاسم الكامل" class="quote-input">
+            <select name="service_type" required class="quote-select">
+                <option value="" data-i18n="selectService">اختر نوع الخدمة</option>
+                <option value="cameras" data-i18n="optCameras">تركيب كاميرات المراقبة</option>
+                <option value="wifi" data-i18n="optWifi">تقوية الواي فاي والهوائيات</option>
+                <option value="networks" data-i18n="optNetworks">شبكات التيار الخفيف</option>
+                <option value="smart_home" data-i18n="optSmartHome">حلول المنزل الذكي</option>
+                <option value="other" data-i18n="optOther">أخرى</option>
+            </select>
+            <input type="tel" name="phone" required data-i18n-placeholder="quotePhone" placeholder="رقم الهاتف" class="quote-input">
+            <button type="submit" class="quote-submit" data-i18n="sendQuote">إرسال الطلب</button>
+        </form>
+        <div class="quote-message hidden" id="quote-message"></div>
+    </section>
+
+    <!-- Customer Testimonials -->
+    <section class="testimonials-section" id="testimonials-section">
+        <h2 class="section-title" data-i18n="testimonialsTitle">آراء عملائنا</h2>
+        <div class="testimonials-grid" id="testimonials-grid">
+            <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- Estimate Calculator -->
+    <section class="calculator-section" id="calculator-section">
+        <h2 class="section-title" data-i18n="calcTitle">حاسبة التقدير الأولي</h2>
+        <p class="section-subtitle" data-i18n="calcSubtitle">اختر عدد الغرف في منزلك للحصول على تقدير أولي لنوع الشبكة المطلوبة</p>
+        <div class="calculator-box">
+            <label data-i18n="calcRooms">عدد الغرف</label>
+            <input type="range" id="calc-rooms" min="1" max="10" value="3" class="calc-range">
+            <span class="calc-value" id="calc-value">3</span>
+            <div class="calc-result" id="calc-result"></div>
+        </div>
+    </section>
+
     <!-- Projects Section - Each project has its own page -->
     <section class="projects-section" id="projects-section">
         <h2 class="section-title" data-i18n="ourProjects">مشاريعنا التعليمية</h2>
@@ -338,6 +421,6 @@
         <p>IT NORD — For Technical Solutions</p>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
 </body>
 </html>
