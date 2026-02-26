@@ -236,8 +236,14 @@ async function loadPortfolioEditor() {
                 <span>${p.label_ar || p.label_en || 'صورة ' + (i + 1)}</span>
                 <button class="btn-remove" data-remove-portfolio="${p.id}">حذف</button>
             </div>
-            <label>رابط الصورة</label>
-            <input type="text" data-portfolio-url="${p.id}" value="${(p.image_url || '').replace(/"/g, '&quot;')}" placeholder="https://... أو base64">
+            <label>رفع الصورة من الجهاز</label>
+            <div class="portfolio-upload-zone feature-upload-zone" data-portfolio-zone="${p.id}">
+                <input type="file" accept="image/*" data-portfolio-file="${p.id}">
+                <span class="upload-hint">اختر صورة من جهازك</span>
+                <img class="upload-preview" data-portfolio-preview="${p.id}" alt="معاينة" style="max-height:100px;display:none">
+            </div>
+            <label>أو رابط الصورة</label>
+            <input type="text" data-portfolio-url="${p.id}" value="${(p.image_url || '').startsWith('data:') ? '' : (p.image_url || '').replace(/"/g, '&quot;')}" placeholder="https://... (اختياري)">
             <label>التسمية (عربي)</label>
             <input type="text" data-portfolio-label-ar="${p.id}" value="${(p.label_ar || '').replace(/"/g, '&quot;')}">
             <label>نوع (قبل/بعد)</label>
@@ -247,6 +253,28 @@ async function loadPortfolioEditor() {
             </select>
         </div>
     `).join('');
+    container.querySelectorAll('[data-portfolio-file]').forEach(input => {
+        input.onchange = (e) => handlePortfolioFileSelect(e, parseInt(input.dataset.portfolioFile, 10));
+    });
+    data.forEach((p) => {
+        if (p.image_url && p.image_url.startsWith('data:')) {
+            const preview = container.querySelector(`[data-portfolio-preview="${p.id}"]`);
+            const zone = container.querySelector(`[data-portfolio-zone="${p.id}"]`);
+            if (preview) {
+                preview.src = p.image_url;
+                preview.style.display = 'block';
+                zone?.classList.add('has-preview');
+            }
+        } else if (p.image_url && (p.image_url.startsWith('http') || p.image_url.startsWith('/'))) {
+            const preview = container.querySelector(`[data-portfolio-preview="${p.id}"]`);
+            const zone = container.querySelector(`[data-portfolio-zone="${p.id}"]`);
+            if (preview) {
+                preview.src = p.image_url;
+                preview.style.display = 'block';
+                zone?.classList.add('has-preview');
+            }
+        }
+    });
     container.querySelectorAll('[data-remove-portfolio]').forEach(btn => {
         btn.onclick = async () => {
             if (!confirm('حذف؟')) return;
@@ -256,6 +284,30 @@ async function loadPortfolioEditor() {
             } catch (e) { showToast('فشل'); }
         };
     });
+}
+
+async function handlePortfolioFileSelect(e, portfolioId) {
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+        showToast('يرجى اختيار ملف صورة');
+        return;
+    }
+    const container = document.getElementById('portfolio-editor');
+    const preview = container?.querySelector(`[data-portfolio-preview="${portfolioId}"]`);
+    const zone = container?.querySelector(`[data-portfolio-zone="${portfolioId}"]`);
+    const urlInput = container?.querySelector(`[data-portfolio-url="${portfolioId}"]`);
+    if (!container || !preview) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+        let dataUrl = reader.result;
+        if (file.size > 500000) dataUrl = await compressImage(dataUrl, 800);
+        preview.src = dataUrl;
+        preview.style.display = 'block';
+        zone?.classList.add('has-preview');
+        if (urlInput) urlInput.value = ''; // Clear URL when uploading from device
+        preview.dataset.portfolioBase64 = dataUrl; // Store for save
+    };
+    reader.readAsDataURL(file);
 }
 document.getElementById('add-portfolio-btn')?.addEventListener('click', async () => {
     try {
@@ -787,8 +839,17 @@ async function savePortfolio() {
     for (const item of items) {
         const pid = parseInt(item.dataset.portfolioId, 10);
         if (isNaN(pid)) continue;
+        const preview = item.querySelector(`[data-portfolio-preview="${pid}"]`);
+        const urlInput = item.querySelector(`[data-portfolio-url="${pid}"]`)?.value?.trim() || '';
+        // Prefer base64 from device upload, else URL
+        let imageUrl = urlInput;
+        if (preview?.dataset.portfolioBase64) {
+            imageUrl = preview.dataset.portfolioBase64;
+        } else if (preview?.src && preview.src.startsWith('data:')) {
+            imageUrl = preview.src;
+        }
         const payload = {
-            image_url: item.querySelector(`[data-portfolio-url="${pid}"]`)?.value || '',
+            image_url: imageUrl,
             label_ar: item.querySelector(`[data-portfolio-label-ar="${pid}"]`)?.value || '',
             label_en: '',
             type: item.querySelector(`[data-portfolio-type="${pid}"]`)?.value || 'after'

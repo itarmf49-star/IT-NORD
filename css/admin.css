@@ -448,6 +448,14 @@ body {
     position: relative;
 }
 
+.feature-upload-zone.has-preview .upload-hint {
+    display: none;
+}
+
+.feature-upload-zone.has-preview .upload-preview {
+    display: block !important;
+}
+
 .feature-upload-zone input[type="file"] {
     position: absolute;
     inset: 0;
