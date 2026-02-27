@@ -17,12 +17,29 @@ CORS(app)
 # On Vercel, filesystem is read-only except /tmp
 if os.environ.get('VERCEL'):
     DB_PATH = Path('/tmp') / 'itnord.db'
+    SEED_PATH = Path(__file__).parent / 'data' / 'itnord-seed.db'
 else:
     DB_PATH = Path(__file__).parent / 'data' / 'itnord.db'
+    SEED_PATH = None
+
+
+def _ensure_vercel_db_seeded():
+    """On Vercel cold start: copy pre-built seed DB when /tmp DB is empty or missing."""
+    if not os.environ.get('VERCEL') or not SEED_PATH or not SEED_PATH.exists():
+        return
+    try:
+        need_copy = not DB_PATH.exists() or DB_PATH.stat().st_size == 0
+        if need_copy:
+            import shutil
+            shutil.copy2(SEED_PATH, DB_PATH)
+    except Exception:
+        pass
 
 
 def get_db():
     """Get SQLite connection"""
+    if os.environ.get('VERCEL'):
+        _ensure_vercel_db_seeded()
     Path(DB_PATH).parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH, timeout=30)
     conn.row_factory = sqlite3.Row

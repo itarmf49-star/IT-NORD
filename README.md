@@ -26,6 +26,14 @@ python app.py
 python seed_projects.py
 ```
 
+## النشر على Vercel
+
+لضمان ظهور المشاريع والصور على الموقع المنشور:
+
+1. أنشئ ملف قاعدة البيانات الأولي: `python build_seed_db.py`
+2. تأكد من إضافة الملف `data/itnord-seed.db` إلى Git (يُسمح به في .gitignore)
+3. نفّذ النشر على Vercel كالمعتاد
+
 ## رفع على GitHub
 
 ```bash

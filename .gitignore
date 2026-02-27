@@ -10,6 +10,8 @@ ENV/
 
 # Database (optional: remove to commit DB)
 data/*.db
+# Keep seed DB for Vercel deployment
+!data/itnord-seed.db
 
 # IDE
 .idea/

@@ -50,7 +50,7 @@
         </article>
         <div class="project-notfound hidden" id="project-notfound">
             <p id="notfound-msg">المشروع غير موجود</p>
-            <p class="notfound-hint">تأكد من تشغيل الخادم (<code>python app.py</code>) وتشغيل <code>python seed_projects.py</code> لإضافة المشاريع.</p>
+            <p class="notfound-hint">قد يكون المحتوى لا يزال قيد التحميل أو أن الرابط غير صحيح. جرّب العودة للصفحة الرئيسية وتحديث الصفحة.</p>
             <a href="/" id="notfound-back" class="btn-back" data-i18n="backToHome">العودة للرئيسية</a>
         </div>
     </main>
@@ -115,7 +115,7 @@
                 try {
                     const res = await fetch(API + '/projects/' + pid);
                     if (!res.ok) {
-                        showNotFound('المشروع غير موجود');
+                        showNotFound('المشروع غير موجود. تحقق من الرابط أو حدّث الصفحة.');
                         return;
                     }
                     const p = await res.json();
@@ -169,7 +169,7 @@
                     notfound.classList.add('hidden');
                     article.classList.remove('hidden');
                 } catch (e) {
-                    showNotFound('تعذر تحميل المشروع. تحقق من تشغيل الخادم.');
+                    showNotFound('تعذر تحميل المشروع. حدّث الصفحة أو جرّب لاحقاً.');
                 }
             }
 

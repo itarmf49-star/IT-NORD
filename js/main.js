@@ -250,15 +250,17 @@ const CALC_ESTIMATES = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (API) fetch(API + '/visitors', { method: 'POST' }).catch(() => {});
     initLanguage();
     initOurWorkLinks();
+    await loadHeroSlides();
     initHeroSlider();
     loadFeatures();
     loadTools();
     loadMediaOverrides();
     loadProjects();
+    loadPortfolio();
     loadTestimonials();
     initQuoteForm();
     initCalculator();
@@ -267,6 +269,51 @@ document.addEventListener('DOMContentLoaded', () => {
     initChat();
     initDimCarousel();
 });
+
+async function loadHeroSlides() {
+    const track = document.getElementById('hero-slider-track');
+    if (!track || !API) return;
+    try {
+        const res = await fetch(API + '/hero-slides');
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+                track.innerHTML = data.map((s, i) => `
+                    <div class="hero-slide ${i === 0 ? 'active' : ''}" data-slide="${i}">
+                        <img src="${(s.image_url || '').replace(/"/g, '&quot;')}" alt="${(s.title_ar || s.title_en || '').replace(/"/g, '&quot;')}" loading="${i === 0 ? 'eager' : 'lazy'}">
+                        <div class="hero-slide-overlay"></div>
+                    </div>
+                `).join('');
+            }
+        }
+    } catch (_) {}
+}
+
+async function loadPortfolio() {
+    const grid = document.getElementById('portfolio-grid');
+    if (!grid || !API) return;
+    try {
+        const res = await fetch(API + '/portfolio');
+        if (res.ok) {
+            const data = await res.json();
+            if (data && data.length > 0) {
+                const lang = getCurrentLang();
+                const t = TRANSLATIONS[lang] || TRANSLATIONS.ar;
+                grid.innerHTML = data.map(p => {
+                    const label = lang === 'ar' ? (p.label_ar || p.label_en || '') : (p.label_en || p.label_ar || '');
+                    const isBA = p.type === 'before' || p.type === 'after';
+                    const baLabel = p.type === 'before' ? (t.before || 'قبل') : (t.after || 'بعد');
+                    return `
+                        <div class="portfolio-item ${isBA ? 'before-after' : ''}">
+                            ${isBA ? `<div class="ba-label">${baLabel}</div>` : ''}
+                            <img src="${(p.image_url || '').replace(/"/g, '&quot;')}" alt="${(label || '').replace(/"/g, '&quot;')}" loading="lazy">
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+    } catch (_) {}
+}
 
 function initHeroSlider() {
     const track = document.getElementById('hero-slider-track');
@@ -575,7 +622,7 @@ async function loadProjects() {
                 const lang = getCurrentLang();
                 const base = window.location.origin || '';
                 if (projects.length === 0) {
-                    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">لا توجد مشاريع حالياً.</p>';
+                    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">لا توجد مشاريع حالياً. حدّث الصفحة للتحقق مرة أخرى.</p>';
                     return;
                 }
                 grid.innerHTML = projects.map(p => {
@@ -600,7 +647,7 @@ async function loadProjects() {
             }
         }
     } catch (_) {}
-    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">قم بتشغيل خادم Python لعرض المشاريع.</p>';
+    grid.innerHTML = '<p style="color: var(--gray-300); text-align:center;">تعذر تحميل المشاريع. حدّث الصفحة للتحقق مرة أخرى.</p>';
 }
 
 function getDefaultCommunicationButtons() {
