@@ -112,10 +112,19 @@
                     showNotFound('قم بتشغيل خادم Python ثم افتح الموقع من: http://127.0.0.1:5000');
                     return;
                 }
+                const url = API + '/projects/' + pid;
                 try {
-                    const res = await fetch(API + '/projects/' + pid);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+                    const res = await fetch(url, {
+                        signal: controller.signal,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    clearTimeout(timeoutId);
                     if (!res.ok) {
-                        showNotFound('المشروع غير موجود. تحقق من الرابط أو حدّث الصفحة.');
+                        const errText = await res.text().catch(() => '');
+                        console.warn('[IT NORD] API error:', res.status, res.statusText, errText.slice(0, 200));
+                        showNotFound('المشروع غير موجود (خطأ ' + res.status + '). حدّث الصفحة أو جرّب لاحقاً.');
                         return;
                     }
                     const p = await res.json();
@@ -169,7 +178,12 @@
                     notfound.classList.add('hidden');
                     article.classList.remove('hidden');
                 } catch (e) {
-                    showNotFound('تعذر تحميل المشروع. حدّث الصفحة أو جرّب لاحقاً.');
+                    if (e.name === 'AbortError') {
+                        showNotFound('انتهت مهلة الطلب. الخادم يستغرق وقتاً. حدّث الصفحة.');
+                    } else {
+                        console.error('[IT NORD] Load error:', e);
+                        showNotFound('تعذر تحميل المشروع. حدّث الصفحة أو جرّب لاحقاً.');
+                    }
                 }
             }
 

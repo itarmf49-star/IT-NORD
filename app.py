@@ -25,15 +25,30 @@ else:
 
 def _ensure_vercel_db_seeded():
     """On Vercel cold start: copy pre-built seed DB when /tmp DB is empty or missing."""
-    if not os.environ.get('VERCEL') or not SEED_PATH or not SEED_PATH.exists():
+    if not os.environ.get('VERCEL'):
+        return
+    seed_paths = [
+        Path(__file__).parent / 'data' / 'itnord-seed.db',
+        Path.cwd() / 'data' / 'itnord-seed.db',
+        SEED_PATH,
+    ]
+    seed_path = None
+    for p in seed_paths:
+        if p and p.exists():
+            seed_path = p
+            break
+    if not seed_path:
+        import sys
+        print('VERCEL DB: No seed found at', [str(p) for p in seed_paths], file=sys.stderr, flush=True)
         return
     try:
         need_copy = not DB_PATH.exists() or DB_PATH.stat().st_size == 0
         if need_copy:
             import shutil
-            shutil.copy2(SEED_PATH, DB_PATH)
-    except Exception:
-        pass
+            shutil.copy2(seed_path, DB_PATH)
+    except Exception as e:
+        import sys
+        print('VERCEL DB: Seed copy failed:', e, file=sys.stderr, flush=True)
 
 
 def get_db():
@@ -583,15 +598,20 @@ def list_projects():
 
 @app.route('/api/projects/<int:pid>', methods=['GET'])
 def get_project(pid):
-    conn = get_db()
-    row = conn.execute(
-        "SELECT id, category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images FROM projects WHERE id = ?",
-        (pid,)
-    ).fetchone()
-    conn.close()
-    if not row:
-        return jsonify({'error': 'Not found'}), 404
-    return jsonify(dict(row))
+    try:
+        conn = get_db()
+        row = conn.execute(
+            "SELECT id, category, title_ar, title_en, description_ar, description_en, video_url, thumbnail_url, gallery_images FROM projects WHERE id = ?",
+            (pid,)
+        ).fetchone()
+        conn.close()
+        if not row:
+            return jsonify({'error': 'Not found'}), 404
+        return jsonify(dict(row))
+    except Exception as e:
+        import sys
+        print('API get_project error:', e, file=sys.stderr, flush=True)
+        return jsonify({'error': 'Database error', 'detail': str(e)}), 500
 
 
 @app.route('/api/projects', methods=['POST'])
