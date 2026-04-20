@@ -1,8 +1,13 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const appDir = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
+  // Monorepo: parent folder may contain another lockfile; pin the app root for Turbopack/Vercel.
   turbopack: {
-    root: process.cwd(),
+    root: appDir,
   },
   poweredByHeader: false,
   compress: true,
