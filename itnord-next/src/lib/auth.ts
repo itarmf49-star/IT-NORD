@@ -1,12 +1,13 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
-import type { Role } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import type { Role } from "@/types/role";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
+
+const DEMO_ADMIN_EMAIL = "itnord@outlook.fr";
+const DEMO_ADMIN_PASSWORD = "ITNORD@2026";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   providers: [
     CredentialsProvider({
@@ -20,17 +21,31 @@ export const authOptions: NextAuthOptions = {
         const password = credentials?.password ?? "";
         if (!email || !password) return null;
 
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user?.passwordHash) return null;
-        const ok = await bcrypt.compare(password, user.passwordHash);
+        // Beginner-friendly fallback admin account for control panel access.
+        if (email === DEMO_ADMIN_EMAIL && password === DEMO_ADMIN_PASSWORD) {
+          return {
+            id: "demo-admin",
+            email: DEMO_ADMIN_EMAIL,
+            name: "MauriTech Admin",
+            role: "ADMIN" as Role,
+          };
+        }
+
+        const supabase = getSupabaseAdmin();
+        if (!supabase) return null;
+
+        const { data: user, error } = await supabase.from("users").select("*").eq("email", email).maybeSingle();
+        if (error || !user?.password_hash) return null;
+
+        const ok = await bcrypt.compare(password, user.password_hash as string);
         if (!ok) return null;
 
         return {
-          id: user.id,
-          email: user.email ?? undefined,
-          name: user.name ?? undefined,
-          image: user.image ?? undefined,
-          role: user.role,
+          id: user.id as string,
+          email: (user.email as string) ?? undefined,
+          name: (user.name as string) ?? undefined,
+          image: (user.image as string) ?? undefined,
+          role: user.role as Role,
         };
       },
     }),
@@ -53,4 +68,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-

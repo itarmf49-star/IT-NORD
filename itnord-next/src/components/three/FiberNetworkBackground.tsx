@@ -1,22 +1,31 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, Points } from "three";
+import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, Points, ShaderMaterial } from "three";
 import { useMemo, useRef } from "react";
+
+function seededNoise(seed: number) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+}
 
 function FiberPoints() {
   const pointsRef = useRef<Points | null>(null);
-  const matRef = useRef<any>(null);
+  const matRef = useRef<ShaderMaterial | null>(null);
 
   const { positions, speeds } = useMemo(() => {
     const count = 1600;
     const pos = new Float32Array(count * 3);
     const spd = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      pos[i * 3 + 0] = (Math.random() - 0.5) * 18;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 14;
-      spd[i] = 0.4 + Math.random() * 1.2;
+      const n1 = seededNoise(i * 3 + 1);
+      const n2 = seededNoise(i * 3 + 2);
+      const n3 = seededNoise(i * 3 + 3);
+      const n4 = seededNoise(i * 3 + 4);
+      pos[i * 3 + 0] = (n1 - 0.5) * 18;
+      pos[i * 3 + 1] = (n2 - 0.5) * 10;
+      pos[i * 3 + 2] = (n3 - 0.5) * 14;
+      spd[i] = 0.4 + n4 * 1.2;
     }
     return { positions: pos, speeds: spd };
   }, []);

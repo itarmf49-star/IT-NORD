@@ -1,15 +1,21 @@
 import { siteConfig } from "@/lib/content";
+import { defaultLocale, t, type Locale } from "@/lib/i18n";
+import { BRAND_NAME } from "@/lib/config";
 
-export function SiteFooter() {
+type SiteFooterProps = {
+  locale?: Locale;
+};
+
+export function SiteFooter({ locale = defaultLocale }: SiteFooterProps) {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div>
-          <h2 className="footer-title">IT NORD</h2>
-          <p>Secure and modern technology deployments for businesses and institutions.</p>
+          <h2 className="footer-title">{BRAND_NAME}</h2>
+          <p>{t(locale, "footerTagline")}</p>
         </div>
         <div>
-          <h3 className="footer-heading">Contact</h3>
+          <h3 className="footer-heading">{t(locale, "footerContact")}</h3>
           <ul className="footer-list">
             <li>
               <a href={`tel:${siteConfig.phone}`}>{siteConfig.phone}</a>

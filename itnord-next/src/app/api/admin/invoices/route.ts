@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { databaseUnavailableResponse } from "@/lib/api-db-response";
 import { getStaffSession } from "@/lib/staff-api";
+import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const ItemSchema = z.object({
@@ -22,13 +24,21 @@ export async function GET() {
   const staff = await getStaffSession();
   if (!staff.ok) return staff.response;
 
-  const invoices = await prisma.invoice.findMany({
-    orderBy: { createdAt: "desc" },
-    take: 200,
-    include: { user: { select: { id: true, email: true, name: true } }, items: true },
-  });
+  try {
+    const invoices = await prisma.billingInvoice.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 200,
+      include: {
+        user: { select: { id: true, email: true, name: true } },
+        items: true,
+      },
+    });
 
-  return NextResponse.json({ invoices });
+    return NextResponse.json({ invoices });
+  } catch (e) {
+    console.error("[api/admin/invoices GET]", e);
+    return databaseUnavailableResponse();
+  }
 }
 
 export async function POST(req: Request) {
@@ -39,48 +49,46 @@ export async function POST(req: Request) {
   const parsed = CreateSchema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: "Invalid body" }, { status: 400 });
 
-  const user = await prisma.user.findUnique({ where: { id: parsed.data.userId } });
-  if (!user) return NextResponse.json({ error: "Unknown user" }, { status: 404 });
+  try {
+    const user = await prisma.user.findUnique({ where: { id: parsed.data.userId }, select: { id: true } });
+    if (!user) return NextResponse.json({ error: "Unknown user" }, { status: 404 });
 
-  const currency = parsed.data.currency ?? "MRU";
-  const items = parsed.data.items.map((it) => {
-    const total = it.quantity * it.unitPrice;
-    return {
+    const currency = parsed.data.currency ?? "MRU";
+    const items = parsed.data.items.map((it) => ({
       description: it.description,
       quantity: it.quantity,
       unitPrice: it.unitPrice,
-      total,
-    };
-  });
-  const subtotal = items.reduce((s, it) => s + it.total, 0);
-  const tax = 0;
-  const total = subtotal + tax;
+      total: it.quantity * it.unitPrice,
+    }));
+    const subtotal = items.reduce((s, it) => s + it.total, 0);
+    const tax = 0;
+    const total = subtotal + tax;
 
-  const invoice = await prisma.invoice.create({
-    data: {
-      userId: user.id,
-      currency,
-      subtotal,
-      tax,
-      total,
-      status: "SENT",
-      notes: parsed.data.notes,
-      items: { create: items },
-    },
-    include: { items: true },
-  });
+    const invoice = await prisma.billingInvoice.create({
+      data: {
+        userId: user.id,
+        currency,
+        subtotal,
+        tax,
+        total,
+        status: "SENT",
+        notes: parsed.data.notes ?? null,
+        items: { create: items },
+      },
+      include: { items: true, user: { select: { id: true, email: true, name: true } } },
+    });
 
-  try {
     await prisma.auditLog.create({
       data: {
         actorId: staff.session.user.id,
         action: "invoice.create",
-        metadata: { invoiceId: invoice.id, userId: user.id },
+        metadata: { invoiceId: invoice.id, userId: invoice.userId },
       },
     });
-  } catch {
-    // ignore
-  }
 
-  return NextResponse.json({ invoice }, { status: 201 });
+    return NextResponse.json({ invoice }, { status: 201 });
+  } catch (e) {
+    console.error("[api/admin/invoices POST]", e);
+    return databaseUnavailableResponse();
+  }
 }

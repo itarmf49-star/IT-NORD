@@ -4,8 +4,13 @@ import { motion } from "framer-motion";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/content";
+import { defaultLocale, t, type Locale } from "@/lib/i18n";
 
-export function ContactCta() {
+type ContactCtaProps = {
+  locale?: Locale;
+};
+
+export function ContactCta({ locale = defaultLocale }: ContactCtaProps) {
   return (
     <section id="contact" className="section">
       <Container>
@@ -17,24 +22,22 @@ export function ContactCta() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div>
-            <p className="eyebrow">Let’s build your platform</p>
-            <h2 className="h2">Request a professional installation or consultation.</h2>
-            <p className="muted">
-              Share your needs and our team will respond with a clear scope, timeline, and recommendations.
-            </p>
+            <p className="eyebrow">{t(locale, "ctaEyebrow")}</p>
+            <h2 className="h2">{t(locale, "ctaTitle")}</h2>
+            <p className="muted">{t(locale, "ctaDescription")}</p>
           </div>
           <div className="cta-actions">
             <a className="btn btn-primary btn-md" href={`tel:${siteConfig.phone}`}>
-              Call now
+              {t(locale, "ctaCallNow")}
             </a>
             <Button
               variant="ghost"
               onClick={() => {
                 navigator.clipboard?.writeText(siteConfig.email).catch(() => undefined);
               }}
-              aria-label="Copy email to clipboard"
+              aria-label={t(locale, "ctaCopyEmail")}
             >
-              Copy email
+              {t(locale, "ctaCopyEmail")}
             </Button>
           </div>
         </motion.div>

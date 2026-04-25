@@ -1,67 +1,118 @@
+import { defaultLocale, isLocale, t, type Locale } from "@/lib/i18n";
 import { prisma } from "@/lib/prisma";
+import { DashboardCard } from "@/components/admin-ui/dashboard-card";
+import { DataTable } from "@/components/admin-ui/data-table";
+import { FolderKanban, MessageSquare, DollarSign } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminDashboardPage() {
-  let stats = {
-    customers: 0,
-    messages: 0,
-    projects: 0,
-    invoices: 0,
-    pageViews24h: 0,
-  };
+type AdminDashboardPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function AdminDashboardPage({ params }: AdminDashboardPageProps) {
+  const { locale: raw } = await params;
+  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
+
+  let stats = { messages: 0, projects: 0, revenue: 0 };
+  let recentMessages: { id: string; name: string; email: string | null; subject: string | null; createdAt: Date; isRead: boolean }[] = [];
+  let recentProjects: { id: string; slug: string; updatedAt: Date; isPublished: boolean; category: string | null }[] = [];
+
+  const sinceDate = new Date();
+  sinceDate.setHours(sinceDate.getHours() - 24);
 
   try {
-    const since = new Date(Date.now() - 1000 * 60 * 60 * 24);
-
-    const [customers, messages, projects, invoices, pageViews24h] = await Promise.all([
-      prisma.user.count({ where: { role: "CUSTOMER" } }),
-      prisma.message.count(),
+    const [messagesCount, projectsCount, revenueAgg, msgs, projs] = await Promise.all([
+      prisma.contactMessage.count(),
       prisma.project.count(),
-      prisma.invoice.count(),
-      prisma.pageView.count({ where: { createdAt: { gte: since } } }),
+      prisma.billingInvoice.aggregate({ _sum: { total: true } }),
+      prisma.contactMessage.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 8,
+        select: { id: true, name: true, email: true, subject: true, createdAt: true, isRead: true },
+      }),
+      prisma.project.findMany({
+        orderBy: { updatedAt: "desc" },
+        take: 6,
+        select: { id: true, slug: true, updatedAt: true, isPublished: true, category: true },
+      }),
     ]);
 
-    stats = { customers, messages, projects, invoices, pageViews24h };
+    stats = { messages: messagesCount, projects: projectsCount, revenue: revenueAgg._sum.total ?? 0 };
+    recentMessages = msgs;
+    recentProjects = projs;
   } catch {
-    // Database may be unavailable in some environments; keep UI usable.
+    // keep zeros
   }
 
   return (
-    <section className="admin-page">
-      <h1 className="h1">Operations overview</h1>
-      <p className="muted">Live metrics from PostgreSQL via Prisma.</p>
+    <section className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-extrabold tracking-tight text-white">{t(locale, "adminOpsOverview")}</h1>
+        <p className="text-white/60 mt-1">{t(locale, "adminLiveMetrics")}</p>
+      </div>
 
-      <div className="admin-kpis">
-        <div className="admin-kpi">
-          <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Customers
-          </p>
-          <strong>{stats.customers}</strong>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <DashboardCard title={t(locale, "adminCmsProjects")} value={stats.projects.toString()} icon={<FolderKanban className="h-5 w-5" />} />
+        <DashboardCard title={t(locale, "adminContactMessages")} value={stats.messages.toString()} icon={<MessageSquare className="h-5 w-5" />} />
+        <DashboardCard title={t(locale, "adminRevenue")} value={`${stats.revenue} MRU`} icon={<DollarSign className="h-5 w-5" />} sub="Billing invoices total" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <h2 className="text-lg font-extrabold tracking-tight text-white">{t(locale, "adminRecentMessages")}</h2>
+          <DataTable
+            empty={t(locale, "adminNoMessages")}
+            rows={recentMessages}
+            columns={[
+              {
+                key: "from",
+                header: t(locale, "adminFrom"),
+                render: (m) => (
+                  <div>
+                    <div className="font-bold text-white/90">{m.name}</div>
+                    <div className="text-white/55 text-xs">{m.email ?? "-"}</div>
+                  </div>
+                ),
+              },
+              {
+                key: "subject",
+                header: t(locale, "adminSubject"),
+                render: (m) => (
+                  <div className="flex items-center gap-2">
+                    <span className={m.isRead ? "text-white/70" : "text-[#F5C542]"}>{m.subject ?? "-"}</span>
+                    {!m.isRead ? <span className="text-[10px] font-extrabold tracking-widest text-[#F5C542]">NEW</span> : null}
+                  </div>
+                ),
+              },
+              {
+                key: "date",
+                header: t(locale, "adminDate"),
+                render: (m) => <span className="text-white/65">{m.createdAt.toISOString().slice(0, 16).replace("T", " ")}</span>,
+              },
+            ]}
+          />
         </div>
-        <div className="admin-kpi">
-          <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Contact messages
-          </p>
-          <strong>{stats.messages}</strong>
-        </div>
-        <div className="admin-kpi">
-          <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            CMS projects
-          </p>
-          <strong>{stats.projects}</strong>
-        </div>
-        <div className="admin-kpi">
-          <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Invoices
-          </p>
-          <strong>{stats.invoices}</strong>
-        </div>
-        <div className="admin-kpi">
-          <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Traffic (24h)
-          </p>
-          <strong>{stats.pageViews24h}</strong>
+
+        <div className="space-y-3">
+          <h2 className="text-lg font-extrabold tracking-tight text-white">{t(locale, "adminRecentProjects")}</h2>
+          <DataTable
+            empty={t(locale, "adminNoProjects")}
+            rows={recentProjects}
+            columns={[
+              { key: "slug", header: "Slug", render: (p) => <span className="font-bold text-white/90">{p.slug}</span> },
+              { key: "category", header: t(locale, "adminCategory"), render: (p) => <span className="text-white/70">{p.category ?? "-"}</span> },
+              {
+                key: "status",
+                header: t(locale, "adminPublished"),
+                render: (p) => (
+                  <span className={["inline-flex px-2 py-1 rounded-lg border text-xs font-extrabold tracking-widest", p.isPublished ? "border-[#F5C542]/25 text-[#F5C542] bg-white/5" : "border-white/10 text-white/55 bg-white/[0.02]"].join(" ")}>
+                    {p.isPublished ? t(locale, "adminYes") : t(locale, "adminNo")}
+                  </span>
+                ),
+              },
+            ]}
+          />
         </div>
       </div>
     </section>

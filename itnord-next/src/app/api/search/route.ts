@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { clientKeyFromRequest, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
+
+function uniqById<T extends { id: string }>(rows: T[]) {
+  const m = new Map<string, T>();
+  for (const r of rows) m.set(r.id, r);
+  return [...m.values()];
+}
 
 export async function GET(req: Request) {
   const ip = clientKeyFromRequest(req);
@@ -14,28 +20,39 @@ export async function GET(req: Request) {
   const q = (searchParams.get("q") ?? "").trim();
   if (!q) return NextResponse.json({ results: [] });
 
-  const [services, projects] = await Promise.all([
-    prisma.serviceProduct.findMany({
-      where: {
-        isActive: true,
-        OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { description: { contains: q, mode: "insensitive" } },
-        ],
-      },
-      take: 10,
-    }),
-    prisma.project.findMany({
-      where: {
-        OR: [
-          { title: { contains: q, mode: "insensitive" } },
-          { description: { contains: q, mode: "insensitive" } },
-          { category: { contains: q, mode: "insensitive" } },
-        ],
-      },
-      take: 10,
-    }),
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return NextResponse.json({ results: [] });
+
+  const pattern = `%${q}%`;
+
+  const [titleServices, descServices, titleProjects, descProjects, catProjects] = await Promise.all([
+    supabase
+      .from("service_products")
+      .select("id, slug, title, base_price, currency")
+      .eq("is_active", true)
+      .ilike("title", pattern)
+      .limit(10),
+    supabase
+      .from("service_products")
+      .select("id, slug, title, base_price, currency")
+      .eq("is_active", true)
+      .ilike("description", pattern)
+      .limit(10),
+    supabase.from("projects").select("id, slug, title, category").ilike("title", pattern).limit(10),
+    supabase.from("projects").select("id, slug, title, category").ilike("description", pattern).limit(10),
+    supabase.from("projects").select("id, slug, title, category").ilike("category", pattern).limit(10),
   ]);
+
+  const services = uniqById([
+    ...(titleServices.data ?? []),
+    ...(descServices.data ?? []),
+  ]).slice(0, 10);
+
+  const projects = uniqById([
+    ...(titleProjects.data ?? []),
+    ...(descProjects.data ?? []),
+    ...(catProjects.data ?? []),
+  ]).slice(0, 10);
 
   return NextResponse.json({
     results: [
@@ -43,7 +60,7 @@ export async function GET(req: Request) {
         type: "service" as const,
         id: s.id,
         title: s.title,
-        subtitle: `${s.basePrice} ${s.currency}`,
+        subtitle: `${s.base_price} ${s.currency}`,
         href: `#service-${s.slug}`,
       })),
       ...projects.map((p) => ({

@@ -1,9 +1,9 @@
 import type { Project, Service, Testimonial } from "@/types/content";
 
 export const siteConfig = {
-  name: "IT NORD",
-  siteUrl: "https://itnord.example.com",
-  title: "IT NORD | Smart Infrastructure and Security Solutions",
+  name: "MauriTech",
+  siteUrl: "https://mauritech.example.com",
+  title: "MauriTech | Smart Infrastructure and Security Solutions",
   description:
     "Professional technology services in Mauritania: networks, surveillance, smart building automation, and secure server infrastructure.",
   phone: "+22247774141",
@@ -66,7 +66,7 @@ export const testimonials: Testimonial[] = [
     id: "1",
     name: "Ahmed Mohamed",
     role: "Operations Manager",
-    quote: "IT NORD delivered a stable infrastructure with excellent execution quality.",
+    quote: "MauriTech delivered a stable infrastructure with excellent execution quality.",
   },
   {
     id: "2",

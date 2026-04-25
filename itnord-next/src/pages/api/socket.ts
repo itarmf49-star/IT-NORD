@@ -1,9 +1,10 @@
 import type { NextApiRequest } from "next";
 import type { NextApiResponse } from "next";
+import { randomUUID } from "node:crypto";
 import { Server as IOServer } from "socket.io";
 import type { Server as HTTPServer } from "http";
 import type { Socket as NetSocket } from "net";
-import { prisma } from "@/lib/prisma";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 type SocketServer = HTTPServer & {
   io?: IOServer;
@@ -32,43 +33,62 @@ export default async function handler(req: NextApiRequest, res: NextApiResponseW
 
     res.socket.server.io = io;
 
-    await prisma.chatThread.upsert({
-      where: { id: LOBBY_THREAD_ID },
-      update: {},
-      create: { id: LOBBY_THREAD_ID, title: "Public lobby" },
-    });
+    const supabase = getSupabaseAdmin();
+    if (supabase) {
+      const now = new Date().toISOString();
+      await supabase.from("chat_threads").upsert(
+        { id: LOBBY_THREAD_ID, title: "Public lobby", created_at: now, updated_at: now },
+        { onConflict: "id" },
+      );
+    }
 
     io.on("connection", async (socket) => {
       socket.join(LOBBY_THREAD_ID);
 
-      const recent = await prisma.chatMessage.findMany({
-        where: { threadId: LOBBY_THREAD_ID },
-        orderBy: { createdAt: "desc" },
-        take: 50,
-      });
+      let history: { id: string; body: string; createdAt: string }[] = [];
 
-      socket.emit(
-        "chat:history",
-        recent
-          .reverse()
-          .map((m) => ({ id: m.id, body: m.body, createdAt: m.createdAt.toISOString() })),
-      );
+      if (supabase) {
+        const { data: recent } = await supabase
+          .from("chat_messages")
+          .select("id, body, created_at")
+          .eq("thread_id", LOBBY_THREAD_ID)
+          .order("created_at", { ascending: false })
+          .limit(50);
+
+        history =
+          (recent ?? [])
+            .reverse()
+            .map((m) => ({
+              id: m.id as string,
+              body: m.body as string,
+              createdAt: new Date(m.created_at as string).toISOString(),
+            })) ?? [];
+      }
+
+      socket.emit("chat:history", history);
 
       socket.on("chat:message", async (payload: { body?: string }) => {
         const body = (payload?.body ?? "").trim();
-        if (!body) return;
+        if (!body || !supabase) return;
 
-        const saved = await prisma.chatMessage.create({
-          data: {
-            threadId: LOBBY_THREAD_ID,
+        const id = randomUUID();
+        const { data: saved, error } = await supabase
+          .from("chat_messages")
+          .insert({
+            id,
+            thread_id: LOBBY_THREAD_ID,
             body,
-          },
-        });
+            is_ai: false,
+          })
+          .select("id, body, created_at")
+          .single();
+
+        if (error || !saved) return;
 
         io.to(LOBBY_THREAD_ID).emit("chat:message", {
           id: saved.id,
           body: saved.body,
-          createdAt: saved.createdAt.toISOString(),
+          createdAt: new Date(saved.created_at as string).toISOString(),
         });
       });
     });

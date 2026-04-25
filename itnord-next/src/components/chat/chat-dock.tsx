@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
+import { defaultLocale, t, type Locale } from "@/lib/i18n";
 
 type ChatMessage = {
   id: string;
@@ -9,7 +10,11 @@ type ChatMessage = {
   createdAt: string;
 };
 
-export function ChatDock() {
+type ChatDockProps = {
+  locale?: Locale;
+};
+
+export function ChatDock({ locale = defaultLocale }: ChatDockProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -51,19 +56,19 @@ export function ChatDock() {
   return (
     <div className="chat-dock" aria-live="polite">
       <button type="button" className="chat-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        Live chat
+        {t(locale, "chatLive")}
       </button>
 
       {open ? (
         <div className="chat-panel">
           <div className="chat-header">
             <div>
-              <p className="chat-title">IT NORD Live</p>
+              <p className="chat-title">{t(locale, "chatTitle")}</p>
               <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                Socket.io lobby (public demo)
+                {t(locale, "chatSubtitle")}
               </p>
             </div>
-            <button type="button" className="chat-close" onClick={() => setOpen(false)} aria-label="Close chat">
+            <button type="button" className="chat-close" onClick={() => setOpen(false)} aria-label={t(locale, "chatClose")}>
               ×
             </button>
           </div>
@@ -87,9 +92,9 @@ export function ChatDock() {
               setDraft("");
             }}
           >
-            <input className="input" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Message..." />
+            <input className="input" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={t(locale, "chatPlaceholder")} />
             <button className="btn btn-primary btn-sm" type="submit">
-              Send
+              {t(locale, "chatSend")}
             </button>
           </form>
         </div>

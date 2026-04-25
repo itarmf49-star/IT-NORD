@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/lib/i18n";
-import { defaultLocale, isLocale } from "@/lib/i18n";
+import { defaultLocale, isLocale, t } from "@/lib/i18n";
 
 export default function LoginPage() {
   const params = useParams();
@@ -24,8 +24,8 @@ export default function LoginPage() {
     <section className="section">
       <Container className="auth-wrap">
         <div className="auth-card">
-          <h1 className="h1">Sign in</h1>
-          <p className="muted">Access your account, portal tools, and admin dashboard (role-based).</p>
+          <h1 className="h1">{t(locale, "authSignInTitle")}</h1>
+          <p className="muted">{t(locale, "authSignInDescription")}</p>
 
           <form
             className="auth-form"
@@ -40,12 +40,12 @@ export default function LoginPage() {
                 callbackUrl: next,
               });
               setLoading(false);
-              if (res?.error) setError("Invalid credentials");
+              if (res?.error) setError(t(locale, "authInvalidCredentials"));
               if (res?.ok) window.location.href = res.url ?? next;
             }}
           >
             <label className="field">
-              <span className="field-label">Email</span>
+              <span className="field-label">{t(locale, "authEmail")}</span>
               <input
                 className="input"
                 type="email"
@@ -56,7 +56,7 @@ export default function LoginPage() {
               />
             </label>
             <label className="field">
-              <span className="field-label">Password</span>
+              <span className="field-label">{t(locale, "authPassword")}</span>
               <input
                 className="input"
                 type="password"
@@ -68,14 +68,14 @@ export default function LoginPage() {
             </label>
             {error ? <p className="auth-error">{error}</p> : null}
             <Button type="submit" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t(locale, "authSigningIn") : t(locale, "authSignIn")}
             </Button>
           </form>
 
           <p className="muted" style={{ marginTop: "1rem" }}>
-            New here?{" "}
+            {t(locale, "authNewHere")}{" "}
             <Link className="inline-link" href={`/${locale}/register`}>
-              Create an account
+              {t(locale, "authCreateAccount")}
             </Link>
           </p>
         </div>

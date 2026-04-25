@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
-import { projects } from "@/lib/content";
+import { databaseUnavailableResponse } from "@/lib/api-db-response";
+import { prisma } from "@/lib/prisma";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export async function GET() {
-  return NextResponse.json(
-    {
-      data: projects,
-      count: projects.length,
-    },
-    { status: 200 },
-  );
+  try {
+    const data = await prisma.project.findMany({
+      where: { isPublished: true },
+      orderBy: { updatedAt: "desc" },
+      take: 200,
+    });
+    return NextResponse.json({ data, count: data.length }, { status: 200 });
+  } catch (e) {
+    console.error("[api/projects GET]", e);
+    return databaseUnavailableResponse();
+  }
 }

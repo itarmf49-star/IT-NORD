@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { Button, LinkButton } from "@/components/ui/button";
-import { defaultLocale, isLocale, type Locale } from "@/lib/i18n";
+import { defaultLocale, isLocale, t, type Locale } from "@/lib/i18n";
 
 function estimateApCount(areaSqm: number, floors: number, wallLossDb: number) {
   const effectiveArea = areaSqm * Math.sqrt(floors);
@@ -30,7 +30,7 @@ export default function CoverageCalculatorPage() {
   const raw = typeof params?.locale === "string" ? params.locale : defaultLocale;
   const locale: Locale = isLocale(raw) ? raw : defaultLocale;
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [area, setArea] = useState(220);
   const [floors, setFloors] = useState(2);
   const [wallLoss, setWallLoss] = useState(8);
@@ -61,23 +61,21 @@ export default function CoverageCalculatorPage() {
   return (
     <section className="section">
       <Container>
-        <h1 className="h1">Smart coverage planner</h1>
-        <p className="muted">
-          A fast indoor Wi‑Fi planning estimate for sales calls. Replace with RF survey data before final BOQ.
-        </p>
+        <h1 className="h1">{t(locale, "coverageTitle")}</h1>
+        <p className="muted">{t(locale, "coverageDescription")}</p>
 
         <div className="auth-card" style={{ marginTop: "1rem" }}>
           <div className="auth-form">
             <label className="field">
-              <span className="field-label">Indoor area (m²)</span>
+              <span className="field-label">{t(locale, "coverageIndoorArea")}</span>
               <input className="input" type="number" min={20} max={20000} value={area} onChange={(e) => setArea(Number(e.target.value))} />
             </label>
             <label className="field">
-              <span className="field-label">Floors</span>
+              <span className="field-label">{t(locale, "coverageFloors")}</span>
               <input className="input" type="number" min={1} max={40} value={floors} onChange={(e) => setFloors(Number(e.target.value))} />
             </label>
             <label className="field">
-              <span className="field-label">Estimated wall/obstacle loss (dB)</span>
+              <span className="field-label">{t(locale, "coverageWallLoss")}</span>
               <input
                 className="input"
                 type="number"
@@ -90,15 +88,14 @@ export default function CoverageCalculatorPage() {
           </div>
 
           <div style={{ marginTop: "1rem" }}>
-            <p className="field-label">Recommended starting point</p>
+            <p className="field-label">{t(locale, "coverageRecommendedStart")}</p>
             <p className="muted" style={{ marginTop: "0.35rem" }}>
-              <strong style={{ color: "rgba(212,175,55,0.95)" }}>{result.ap}</strong> indoor APs (Wi‑Fi 6 class) and{" "}
-              <strong style={{ color: "rgba(51,184,255,0.95)" }}>{result.switches}</strong> PoE aggregation switches
-              (24‑port class).
+              <strong style={{ color: "rgba(212,175,55,0.95)" }}>{result.ap}</strong> {t(locale, "coverageRecommendedText")}{" "}
+              <strong style={{ color: "rgba(51,184,255,0.95)" }}>{result.switches}</strong> {t(locale, "coverageRecommendedSwitchesText")}
             </p>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem" }}>
               <Button type="button" onClick={() => window.print()}>
-                Export / print
+                {t(locale, "coverageExportPrint")}
               </Button>
               {status === "authenticated" ? (
                 <Button
@@ -118,17 +115,17 @@ export default function CoverageCalculatorPage() {
                       }),
                     });
                     if (!res.ok) {
-                      setSaveState("Could not save plan.");
+                      setSaveState(t(locale, "coverageCouldNotSave"));
                       return;
                     }
-                    setSaveState("Plan saved to your account.");
+                    setSaveState(t(locale, "coverageSaved"));
                   }}
                 >
-                  Save plan
+                  {t(locale, "coverageSavePlan")}
                 </Button>
               ) : (
                 <LinkButton href={`/${locale}/login?next=/${locale}/coverage`} variant="ghost">
-                  Sign in to save
+                  {t(locale, "coverageSignInSave")}
                 </LinkButton>
               )}
             </div>
@@ -138,16 +135,16 @@ export default function CoverageCalculatorPage() {
 
         {status === "authenticated" && plans.length > 0 ? (
           <div className="auth-card" style={{ marginTop: "1rem" }}>
-            <p className="field-label">Your saved plans</p>
+            <p className="field-label">{t(locale, "coverageYourSavedPlans")}</p>
             <div className="admin-table-wrap" style={{ marginTop: "0.75rem" }}>
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Area</th>
-                    <th>Floors</th>
-                    <th>APs</th>
-                    <th>Switches</th>
+                    <th>{t(locale, "adminDate")}</th>
+                    <th>{t(locale, "coverageIndoorArea")}</th>
+                    <th>{t(locale, "coverageFloors")}</th>
+                    <th>{t(locale, "coverageAps")}</th>
+                    <th>{t(locale, "coverageSwitches")}</th>
                   </tr>
                 </thead>
                 <tbody>

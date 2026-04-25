@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { AnalyticsChart, type DailyPoint } from "@/components/admin/analytics-chart";
+import { defaultLocale, isLocale, t, type Locale } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +15,13 @@ function last7DaysKeys() {
   return keys;
 }
 
-export default async function AdminAnalyticsPage() {
+type AdminAnalyticsPageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function AdminAnalyticsPage({ params }: AdminAnalyticsPageProps) {
+  const { locale: raw } = await params;
+  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
   const dayKeys = last7DaysKeys();
   const since = new Date(`${dayKeys[0]}T00:00:00.000Z`);
 
@@ -60,43 +67,43 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <section className="admin-page">
-      <h1 className="h1">Analytics</h1>
-      <p className="muted">Traffic, AI usage, and chat volume (last 7 days).</p>
+      <h1 className="h1">{t(locale, "adminAnalytics")}</h1>
+      <p className="muted">{t(locale, "analyticsTrafficSummary")}</p>
 
       <div className="admin-kpis">
         <div className="admin-kpi">
           <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Page views (7d)
+            {t(locale, "analyticsPageViews7d")}
           </p>
           <strong>{views.length}</strong>
         </div>
         <div className="admin-kpi">
           <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            AI calls (7d)
+            {t(locale, "analyticsAiCalls7d")}
           </p>
           <strong>{aiUsage7d}</strong>
         </div>
         <div className="admin-kpi">
           <p className="muted" style={{ margin: "0 0 0.35rem" }}>
-            Chat messages (7d)
+            {t(locale, "analyticsChatMessages7d")}
           </p>
           <strong>{chatMessages7d}</strong>
         </div>
       </div>
 
       <div className="auth-card" style={{ marginTop: "1rem" }}>
-        <p className="field-label">Daily page views</p>
+        <p className="field-label">{t(locale, "analyticsDailyPageViews")}</p>
         <AnalyticsChart daily={daily} />
       </div>
 
       <div className="auth-card" style={{ marginTop: "1rem" }}>
-        <p className="field-label">Top paths</p>
+        <p className="field-label">{t(locale, "analyticsTopPaths")}</p>
         <div className="admin-table-wrap" style={{ marginTop: "0.75rem" }}>
           <table className="admin-table">
             <thead>
               <tr>
-                <th>Path</th>
-                <th>Views</th>
+                <th>{t(locale, "analyticsPath")}</th>
+                <th>{t(locale, "analyticsViews")}</th>
               </tr>
             </thead>
             <tbody>
@@ -109,7 +116,7 @@ export default async function AdminAnalyticsPage() {
               {topPaths.length === 0 ? (
                 <tr>
                   <td colSpan={2} className="muted">
-                    No page view data in this window.
+                    {t(locale, "analyticsNoPageViewData")}
                   </td>
                 </tr>
               ) : null}

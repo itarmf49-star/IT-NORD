@@ -3,8 +3,13 @@
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
+import { defaultLocale, t, type Locale } from "@/lib/i18n";
 
-export function AiAssistant() {
+type AiAssistantProps = {
+  locale?: Locale;
+};
+
+export function AiAssistant({ locale = defaultLocale }: AiAssistantProps) {
   const { status } = useSession();
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -15,44 +20,44 @@ export function AiAssistant() {
   return (
     <div className="ai-dock">
       <button type="button" className="ai-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        AI
+        {t(locale, "aiToggle")}
       </button>
 
       {open ? (
-        <div className="ai-panel" role="dialog" aria-label="AI assistant">
+        <div className="ai-panel" role="dialog" aria-label={t(locale, "aiDialogLabel")}>
           <div className="ai-header">
             <div>
-              <p className="ai-title">Fiber & networking assistant</p>
+              <p className="ai-title">{t(locale, "aiTitle")}</p>
               <p className="muted" style={{ margin: 0, fontSize: "0.85rem" }}>
-                Answers are informational and should be validated on-site.
+                {t(locale, "aiSubtitle")}
               </p>
             </div>
-            <button type="button" className="chat-close" onClick={() => setOpen(false)} aria-label="Close AI assistant">
+            <button type="button" className="chat-close" onClick={() => setOpen(false)} aria-label={t(locale, "aiDialogLabel")}>
               ×
             </button>
           </div>
 
           {status === "unauthenticated" ? (
             <p className="muted" style={{ fontSize: "0.9rem" }}>
-              Sign in for best quota tracking. Guests can still ask quick questions.
+              {t(locale, "aiSignInHint")}
             </p>
           ) : null}
 
           <label className="field">
-            <span className="field-label">Your question</span>
+            <span className="field-label">{t(locale, "aiQuestionLabel")}</span>
             <textarea
               className="textarea"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               rows={4}
-              placeholder="Example: How do I estimate fiber loss budget for a 2km link?"
+              placeholder={t(locale, "aiQuestionPlaceholder")}
             />
           </label>
 
           {error ? <p className="auth-error">{error}</p> : null}
           {answer ? (
             <div className="ai-answer">
-              <p className="field-label">Answer</p>
+              <p className="field-label">{t(locale, "aiAnswerLabel")}</p>
               <pre className="ai-answer-pre">{answer}</pre>
             </div>
           ) : null}
@@ -72,7 +77,7 @@ export function AiAssistant() {
                     body: JSON.stringify({ prompt }),
                   });
                   if (!res.ok || !res.body) {
-                    setError("AI service unavailable");
+                    setError(t(locale, "aiUnavailable"));
                     setLoading(false);
                     return;
                   }
@@ -105,13 +110,13 @@ export function AiAssistant() {
 
                   setAnswer(text.trim() || null);
                 } catch {
-                  setError("Could not read AI stream");
+                  setError(t(locale, "aiStreamError"));
                 } finally {
                   setLoading(false);
                 }
               }}
             >
-              {loading ? "Thinking..." : "Ask"}
+              {loading ? t(locale, "aiThinking") : t(locale, "aiAsk")}
             </Button>
           </div>
         </div>

@@ -14,6 +14,9 @@ type SliderItem = {
 type AutoSliderProps = {
   items: SliderItem[];
   intervalMs?: number;
+  ariaLabel?: string;
+  eyebrowLabel?: string;
+  navAriaLabel?: string;
 };
 
 function wrapIndex(value: number, length: number) {
@@ -21,7 +24,13 @@ function wrapIndex(value: number, length: number) {
   return mod < 0 ? mod + length : mod;
 }
 
-export function AutoSlider({ items, intervalMs = 4500 }: AutoSliderProps) {
+export function AutoSlider({
+  items,
+  intervalMs = 4500,
+  ariaLabel = "Showcase slider",
+  eyebrowLabel = "Showcase",
+  navAriaLabel = "Slider navigation",
+}: AutoSliderProps) {
   const safeItems = useMemo(() => items.filter(Boolean), [items]);
   const [index, setIndex] = useState(0);
   const isPausedRef = useRef(false);
@@ -39,7 +48,7 @@ export function AutoSlider({ items, intervalMs = 4500 }: AutoSliderProps) {
   if (!active) return null;
 
   return (
-    <section className="container section" aria-label="Showcase slider">
+    <section className="container section" aria-label={ariaLabel}>
       <div
         className="slider"
         onPointerEnter={() => {
@@ -77,10 +86,10 @@ export function AutoSlider({ items, intervalMs = 4500 }: AutoSliderProps) {
               <div className="slider-glow" aria-hidden />
             </div>
             <div className="slider-content">
-              <p className="eyebrow">Showcase</p>
+              <p className="eyebrow">{eyebrowLabel}</p>
               <h2 className="h2">{active.title}</h2>
               <p className="muted">{active.description}</p>
-              <div className="slider-dots" role="tablist" aria-label="Slider navigation">
+              <div className="slider-dots" role="tablist" aria-label={navAriaLabel}>
                 {safeItems.map((item, i) => (
                   <button
                     key={item.id}

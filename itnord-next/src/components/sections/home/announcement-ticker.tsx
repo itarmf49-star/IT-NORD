@@ -4,13 +4,14 @@ import { motion } from "framer-motion";
 
 type AnnouncementTickerProps = {
   items: string[];
+  ariaLabel?: string;
 };
 
-export function AnnouncementTicker({ items }: AnnouncementTickerProps) {
+export function AnnouncementTicker({ items, ariaLabel = "Announcements" }: AnnouncementTickerProps) {
   const text = items.join(" • ");
 
   return (
-    <section className="ticker" aria-label="Announcements">
+    <section className="ticker" aria-label={ariaLabel}>
       <div className="ticker-inner">
         <motion.div
           className="ticker-track"

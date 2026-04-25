@@ -1,14 +1,15 @@
 import OpenAI from "openai";
+import { randomUUID } from "node:crypto";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { clientKeyFromRequest, rateLimit } from "@/lib/rate-limit";
-import { prisma } from "@/lib/prisma";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 const SYSTEM_PROMPT = `
-You are IT NORD's senior telecom engineer assistant.
+You are MauriTech's senior telecom engineer assistant.
 You specialize in fiber optics, GPON/EPON, DWDM basics, structured cabling, Wi‑Fi planning, RF fundamentals, and enterprise network security hardening.
 Rules:
 - Prefer concise, actionable guidance and checklists.
@@ -65,28 +66,29 @@ export async function POST(req: Request) {
 
         const approxTokens = Math.min(32_000, Math.ceil((prompt.length + assembled.length) / 4));
 
-        try {
-          await prisma.aiUsage.create({
-            data: {
-              userId: session?.user?.id ?? null,
+        const supabase = getSupabaseAdmin();
+        if (supabase) {
+          try {
+            await supabase.from("ai_usage").insert({
+              id: randomUUID(),
+              user_id: session?.user?.id ?? null,
               model: "gpt-4o-mini",
               tokens: approxTokens,
-            },
-          });
-        } catch {
-          // ignore
-        }
+            });
+          } catch {
+            // ignore
+          }
 
-        try {
-          await prisma.auditLog.create({
-            data: {
-              actorId: session?.user?.id ?? null,
+          try {
+            await supabase.from("audit_logs").insert({
+              id: randomUUID(),
+              actor_id: session?.user?.id ?? null,
               action: "ai.assist",
               metadata: { promptLength: prompt.length, answerLength: assembled.length },
-            },
-          });
-        } catch {
-          // ignore
+            });
+          } catch {
+            // ignore
+          }
         }
 
         controller.enqueue(encoder.encode(sse({ type: "done" })));

@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth/next";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/types/role";
 import { authOptions } from "@/lib/auth";
 
 export async function requireRole(roles: Role[]) {

@@ -1,16 +1,4 @@
 {
   "version": 2,
-  "buildCommand": "python build_seed_db.py",
-  "builds": [
-    { "src": "api/index.py", "use": "@vercel/python" }
-  ],
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
-  ],
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 30,
-      "memory": 1024
-    }
-  }
+  "rootDirectory": "itnord-next"
 }

@@ -7,6 +7,24 @@ const adminPaths = ["/admin"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const isAssetOrInternal =
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/images") ||
+    pathname === "/favicon.ico" ||
+    pathname.includes(".");
+
+  if (isAssetOrInternal) {
+    return NextResponse.next();
+  }
+
+  const parts = pathname.split("/").filter(Boolean);
+  const maybeLocale = parts[0];
+  if (!maybeLocale || !isLocale(maybeLocale)) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
+    return NextResponse.redirect(url);
+  }
 
   // Locale prefix extraction
   const segments = pathname.split("/").filter(Boolean);
@@ -44,6 +62,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/:locale/admin/:path*", "/:locale/portal/:path*", "/:locale/portal"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
 

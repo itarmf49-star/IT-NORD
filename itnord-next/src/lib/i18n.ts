@@ -11,27 +11,34 @@ export function getDirection(locale: Locale) {
   return locale === "ar" ? "rtl" : "ltr";
 }
 
-type Dictionary = Record<string, string>;
+import en from "../../messages/en.json";
+import fr from "../../messages/fr.json";
+import ar from "../../messages/ar.json";
 
-const dict: Record<Locale, Dictionary> = {
-  en: {
-    navHome: "Home",
-    navProjects: "Projects",
-    navQuote: "Get a quote",
-  },
-  fr: {
-    navHome: "Accueil",
-    navProjects: "Projets",
-    navQuote: "Demander un devis",
-  },
-  ar: {
-    navHome: "الرئيسية",
-    navProjects: "المشاريع",
-    navQuote: "اطلب عرض سعر",
-  },
-};
+type Messages = typeof en;
+const dict: Record<Locale, Messages> = { en, fr, ar };
 
-export function t(locale: Locale, key: keyof (typeof dict)["en"]) {
-  return dict[locale][key] ?? dict.en[key];
+export function getMessages(locale: Locale): Messages {
+  return dict[locale] ?? dict.en;
+}
+
+export function t(
+  locale: Locale,
+  key: keyof Messages,
+  vars?: Record<string, string | number | null | undefined>,
+) {
+  const messages = getMessages(locale);
+  const raw = (messages[key] ?? dict.en[key]) as unknown as string;
+  if (!vars) return raw;
+  return raw.replace(/\{(\w+)\}/g, (_, k: string) => {
+    const v = vars[k];
+    return v == null ? "" : String(v);
+  });
+}
+
+export function localePath(locale: Locale, path = "") {
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (normalized === "/") return `/${locale}`;
+  return `/${locale}${normalized}`;
 }
 

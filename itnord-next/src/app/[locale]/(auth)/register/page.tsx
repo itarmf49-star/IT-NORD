@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/lib/i18n";
-import { defaultLocale, isLocale } from "@/lib/i18n";
+import { defaultLocale, isLocale, t } from "@/lib/i18n";
 
 export default function RegisterPage() {
   const params = useParams();
@@ -24,8 +24,8 @@ export default function RegisterPage() {
     <section className="section">
       <Container className="auth-wrap">
         <div className="auth-card">
-          <h1 className="h1">Create account</h1>
-          <p className="muted">Register to access customer tools, chat, and invoices.</p>
+          <h1 className="h1">{t(locale, "authRegisterTitle")}</h1>
+          <p className="muted">{t(locale, "authRegisterDescription")}</p>
 
           <form
             className="auth-form"
@@ -41,18 +41,18 @@ export default function RegisterPage() {
               setLoading(false);
               if (!res.ok) {
                 const body = await res.json().catch(() => null);
-                setError((body as { error?: string } | null)?.error ?? "Registration failed");
+                setError((body as { error?: string } | null)?.error ?? t(locale, "authRegistrationFailed"));
                 return;
               }
               router.push(`/${locale}/login`);
             }}
           >
             <label className="field">
-              <span className="field-label">Name</span>
+              <span className="field-label">{t(locale, "authName")}</span>
               <input className="input" value={name} onChange={(e) => setName(e.target.value)} required />
             </label>
             <label className="field">
-              <span className="field-label">Email</span>
+              <span className="field-label">{t(locale, "authEmail")}</span>
               <input
                 className="input"
                 type="email"
@@ -63,7 +63,7 @@ export default function RegisterPage() {
               />
             </label>
             <label className="field">
-              <span className="field-label">Password</span>
+              <span className="field-label">{t(locale, "authPassword")}</span>
               <input
                 className="input"
                 type="password"
@@ -75,14 +75,14 @@ export default function RegisterPage() {
             </label>
             {error ? <p className="auth-error">{error}</p> : null}
             <Button type="submit" disabled={loading}>
-              {loading ? "Creating..." : "Create account"}
+              {loading ? t(locale, "authCreating") : t(locale, "authCreateAccount")}
             </Button>
           </form>
 
           <p className="muted" style={{ marginTop: "1rem" }}>
-            Already have an account?{" "}
+            {t(locale, "authAlreadyHaveAccount")}{" "}
             <Link className="inline-link" href={`/${locale}/login`}>
-              Sign in
+              {t(locale, "authSignIn")}
             </Link>
           </p>
         </div>

@@ -5,20 +5,45 @@ import { HomeHero } from "@/components/sections/home/hero";
 import { ProjectsGrid } from "@/components/sections/projects-grid";
 import { ServicesGrid } from "@/components/sections/services-grid";
 import { projects, services } from "@/lib/content";
+import { defaultLocale, isLocale, t, type Locale } from "@/lib/i18n";
 
-export default function HomePage() {
+type HomePageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function HomePage({ params }: HomePageProps) {
+  const { locale: raw } = await params;
+  const locale: Locale = isLocale(raw) ? raw : defaultLocale;
+
+  const tickerItemsByLocale: Record<Locale, string[]> = {
+    en: [
+      "Premium telecom & digital services",
+      "Enterprise networks and secure infrastructure",
+      "Smart buildings, surveillance, and automation",
+      "Fast deployments with modern standards",
+    ],
+    fr: [
+      "Services telecom et numeriques premium",
+      "Reseaux entreprise et infrastructure securisee",
+      "Batiments intelligents, surveillance et automatisation",
+      "Deploiements rapides avec des standards modernes",
+    ],
+    ar: [
+      "خدمات اتصالات ورقمية متميزة",
+      "شبكات مؤسسية وبنية تحتية امنة",
+      "مبان ذكية ومراقبة واتمتة",
+      "تنفيذ سريع بمعايير حديثة",
+    ],
+  };
+
   return (
     <>
-      <AnnouncementTicker
-        items={[
-          "Premium telecom & digital services",
-          "Enterprise networks and secure infrastructure",
-          "Smart buildings, surveillance, and automation",
-          "Fast deployments with modern standards",
-        ]}
-      />
-      <HomeHero />
+      <AnnouncementTicker items={tickerItemsByLocale[locale]} ariaLabel={t(locale, "announcementsAriaLabel")} />
+      <HomeHero locale={locale} />
       <AutoSlider
+        ariaLabel={t(locale, "sliderAriaLabel")}
+        eyebrowLabel={t(locale, "sliderEyebrow")}
+        navAriaLabel={t(locale, "sliderNavAria")}
         items={[
           {
             id: "slide-1",
@@ -40,9 +65,9 @@ export default function HomePage() {
           },
         ]}
       />
-      <ServicesGrid items={services} />
-      <ProjectsGrid items={projects} />
-      <ContactCta />
+      <ServicesGrid items={services} locale={locale} />
+      <ProjectsGrid items={projects} locale={locale} />
+      <ContactCta locale={locale} />
     </>
   );
 }
